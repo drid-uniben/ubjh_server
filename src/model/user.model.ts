@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 
 // User roles in the system
 export enum UserRole {
@@ -16,7 +15,9 @@ export interface IUser extends Document {
   password?: string;
   role: UserRole;
   faculty: string;
-  institution: string;
+  assignedFaculty?: string;
+  affiliation: string;
+  orcid?: string;
   manuscripts?: Types.ObjectId[];
   assignedJournals?: Types.ObjectId[]; // For reviewers
   completedReviews?: Types.ObjectId[]; // For reviewers
@@ -43,7 +44,6 @@ const UserSchema: Schema<IUser> = new Schema(
     email: {
       type: String,
       required: [true, 'Email is required'],
-      unique: true,
       lowercase: true,
       trim: true,
       match: [
@@ -65,10 +65,22 @@ const UserSchema: Schema<IUser> = new Schema(
       trim: true,
       // Will contain the faculty and department here seperated by a comma
     },
-    institution: {
+    assignedFaculty: {
+      type: String,
+      trim: true,
+    },
+    affiliation: {
       type: String,
       trim: true,
       // Open to all institutions - not restricted to UNIBEN
+    },
+    orcid: {
+      type: String,
+      trim: true,
+      match: [
+        /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/,
+        'Please provide a valid ORCID (format: 0000-0000-0000-0000)',
+      ],
     },
     isActive: {
       type: Boolean,

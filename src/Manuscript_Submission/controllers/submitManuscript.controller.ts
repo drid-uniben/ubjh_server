@@ -16,13 +16,15 @@ interface IManuscriptRequest {
     name: string;
     email: string;
     faculty: string;
-    institution: string;
+    affiliation: string;
+    orcid?: string;
   }; // Primary author
   coAuthors?: {
     email: string;
     name: string;
     faculty: string;
-    institution: string;
+    affiliation: string;
+    orcid?: string;
   }[]; // List of co-author emails and names
 }
 
@@ -42,8 +44,9 @@ class SubmitController {
     email: string,
     name: string,
     faculty: string,
-    institution: string,
-    manuscriptId: Types.ObjectId
+    affiliation: string,
+    manuscriptId: Types.ObjectId,
+    orcid?: string
   ): Promise<Types.ObjectId> => {
     let user = await User.findOne({ email });
 
@@ -52,7 +55,8 @@ class SubmitController {
         name,
         email,
         faculty,
-        institution,
+        affiliation,
+        orcid,
         role: UserRole.AUTHOR,
         invitationStatus: 'added',
         manuscripts: [manuscriptId],
@@ -99,8 +103,9 @@ class SubmitController {
         submitter.email,
         submitter.name,
         submitter.faculty,
-        submitter.institution,
-        manuscriptId as Types.ObjectId
+        submitter.affiliation,
+        manuscriptId as Types.ObjectId,
+        submitter.orcid
       );
 
       // Process co-authors
@@ -111,8 +116,9 @@ class SubmitController {
             coAuthor.email,
             coAuthor.name,
             coAuthor.faculty,
-            coAuthor.institution,
-            manuscriptId as Types.ObjectId
+            coAuthor.affiliation,
+            manuscriptId as Types.ObjectId,
+            coAuthor.orcid
           );
           coAuthorIds.push(coAuthorId);
         }
@@ -214,8 +220,9 @@ class SubmitController {
         submitter.email,
         submitter.name,
         submitter.faculty,
-        submitter.institution,
-        revisedManuscriptId as Types.ObjectId
+        submitter.affiliation,
+        revisedManuscriptId as Types.ObjectId,
+        submitter.orcid
       );
 
       const coAuthorIds: Types.ObjectId[] = [];
@@ -225,8 +232,9 @@ class SubmitController {
             coAuthor.email,
             coAuthor.name,
             coAuthor.faculty,
-            coAuthor.institution,
-            revisedManuscriptId as Types.ObjectId
+            coAuthor.affiliation,
+            revisedManuscriptId as Types.ObjectId,
+            coAuthor.orcid
           );
           coAuthorIds.push(coAuthorId);
         }

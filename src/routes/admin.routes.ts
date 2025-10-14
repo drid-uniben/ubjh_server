@@ -37,6 +37,27 @@ router.get(
   adminController.getManuscriptStatistics
 );
 
+router.get(
+  '/faculties-with-manuscripts',
+  authenticateAdminToken,
+  adminRateLimiter,
+  adminController.getFacultiesWithManuscripts
+);
+
+router.get(
+  '/faculties/data',
+  authenticateAdminToken,
+  adminRateLimiter,
+  adminController.getFacultyData
+);
+
+router.post(
+  '/faculties/assign',
+  authenticateAdminToken,
+  adminRateLimiter,
+  adminController.assignFaculty
+);
+
 //router.use('/researcher', researcherManagementRoutes);
 //router.use('/', assignReviewRoutes);
 //router.use('/reassign', reassignReviewRoutes);

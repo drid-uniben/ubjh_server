@@ -31,15 +31,12 @@ export interface IArticle extends Document {
     end: number;
   };
 
-  // Classification
-  faculty: string;
-  department: string;
-
   // Metrics & Tracking
   views: {
     count: number;
     viewers: IViewer[];
   };
+
   citationCount: number;
 
   // Licensing
@@ -101,6 +98,7 @@ const ArticleSchema: Schema<IArticle> = new Schema(
       type: Date,
       default: Date.now,
       required: [true, 'Publish date is required'],
+      // Set when published - can be custom date for archives or current date
     },
     doi: {
       type: String,
@@ -133,18 +131,6 @@ const ArticleSchema: Schema<IArticle> = new Schema(
           message: 'End page must be greater than or equal to start page',
         },
       },
-    },
-
-    // Classification
-    faculty: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    department: {
-      type: String,
-      required: true,
-      trim: true,
     },
 
     // Metrics & Tracking
