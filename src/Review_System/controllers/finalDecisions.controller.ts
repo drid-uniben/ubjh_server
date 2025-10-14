@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import Proposal, {
   ProposalStatus,
-} from '../../Proposal_Submission/models/proposal.model';
+} from '../../Manuscript_Submission/models/proposal.model';
 import { NotFoundError, UnauthorizedError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';

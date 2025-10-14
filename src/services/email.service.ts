@@ -1,17 +1,14 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import logger from '../utils/logger';
 import validateEnv from '../utils/validateEnv';
-import {
-  SubmitterType,
-  ProposalStatus,
-} from '../Proposal_Submission/models/proposal.model';
+import { ManuscriptStatus } from '../Manuscript_Submission/models/manuscript.model';
 import { FullProposalStatus } from '../researchers/models/fullProposal.model';
 import {
   reviewReminderTemplate,
   overdueReviewTemplate,
   reconciliationAssignmentTemplate,
   reviewAssignmentTemplate,
-  proposalNotificationTemplate,
+  manuscriptNotificationTemplate,
   submissionConfirmationTemplate,
   statusUpdateTemplate,
   reviewerInvitationTemplate,
@@ -19,7 +16,7 @@ import {
   invitationTemplate,
   credentialsTemplate,
   aiReviewFailureTemplate,
-  proposalStatusUpdateTemplate,
+  manuscriptStatusUpdateTemplate,
   proposalArchiveNotificationTemplate,
 } from '../templates/emails';
 import { fullProposalStatusUpdateTemplate } from '../templates/emails/fullProposalStatusUpdateTemplate';
@@ -62,65 +59,61 @@ class EmailService {
     }
   }
 
-  private getSubmitterTypeText(submitterType: SubmitterType): string {
-    return submitterType === 'staff' ? 'Staff Member' : "Master's Student";
-  }
-
-  private getProposalStatusUpdateSubject(
-    status: ProposalStatus,
-    proposalTitle: string
+  private getManuscriptStatusUpdateSubject(
+    status: ManuscriptStatus,
+    manuscriptTitle: string
   ): string {
-    if (status === ProposalStatus.APPROVED) {
-      return `Congratulations! Your Proposal "${proposalTitle}" Has Been Accepted`;
-    } else if (status === ProposalStatus.REJECTED) {
-      return `Update on Your Proposal Submission: Decision Made for "${proposalTitle}"`;
+    if (status === ManuscriptStatus.APPROVED) {
+      return `Congratulations! Your Manuscript "${manuscriptTitle}" Has Been Accepted`;
+    } else if (status === ManuscriptStatus.REJECTED) {
+      return `Update on Your Manuscript Submission: Decision Made for "${manuscriptTitle}"`;
     } else {
-      return `Update on your Proposal Submission: ${proposalTitle}`;
+      return `Update on your Manuscript Submission: ${manuscriptTitle}`;
     }
   }
 
   private getFullProposalStatusUpdateSubject(
-    status: ProposalStatus,
-    proposalTitle: string
+    status: any,
+    manuscriptTitle: string
   ): string {
     if (status === FullProposalStatus.APPROVED) {
-      return `Congratulations! Your Full Proposal "${proposalTitle}" Has Been Shortlisted and Approved`;
+      return `Congratulations! Your Full Manuscript "${manuscriptTitle}" Has Been Shortlisted and Approved`;
     } else if (status === FullProposalStatus.REJECTED) {
-      return `Update on Your Proposal Submission: Decision Made for "${proposalTitle}"`;
+      return `Update on Your Manuscript Submission: Decision Made for "${manuscriptTitle}"`;
     } else {
-      return `Update on your Proposal Submission: ${proposalTitle}`;
+      return `Update on your Manuscript Submission: ${manuscriptTitle}`;
     }
   }
 
   async sendAiReviewFailureEmail(
     to: string,
-    proposalId: string,
+    manuscriptId: string,
     errorMessage: string
   ): Promise<void> {
     try {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: to,
-        subject: `AI Review Generation Failed for Proposal ${proposalId}`,
-        html: aiReviewFailureTemplate(proposalId, errorMessage),
+        subject: `AI Review Generation Failed for Manuscript ${manuscriptId}`,
+        html: aiReviewFailureTemplate(manuscriptId, errorMessage),
       });
       logger.info(
-        `AI review failure email sent to: ${to} for proposal ${proposalId}`
+        `AI review failure email sent to: ${to} for manuscript ${manuscriptId}`
       );
     } catch (error) {
       logger.error(
-        `Failed to send AI review failure email to ${to} for proposal ${proposalId}:`,
+        `Failed to send AI review failure email to ${to} for manuscript ${manuscriptId}:`,
         error instanceof Error ? error.message : 'Unknown error'
       );
       throw error;
     }
   }
 
-  async sendProposalStatusUpdateEmail(
+  async sendManuscriptStatusUpdateEmail(
     to: string,
     name: string,
     projectTitle: string,
-    status: ProposalStatus,
+    status: ManuscriptStatus,
     fundingAmount?: number,
     feedbackComments?: string
   ): Promise<void> {
@@ -128,8 +121,8 @@ class EmailService {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: to,
-        subject: this.getProposalStatusUpdateSubject(status, projectTitle),
-        html: proposalStatusUpdateTemplate(
+        subject: this.getManuscriptStatusUpdateSubject(status, projectTitle),
+        html: manuscriptStatusUpdateTemplate(
           name,
           projectTitle,
           status,
@@ -138,11 +131,11 @@ class EmailService {
         ),
       });
       logger.info(
-        `Proposal status update email sent to: ${to} for proposal ${projectTitle}`
+        `Manuscript status update email sent to: ${to} for manuscript ${projectTitle}`
       );
     } catch (error) {
       logger.error(
-        `Failed to send proposal status update email to ${to} for proposal ${projectTitle}:`,
+        `Failed to send manuscript status update email to ${to} for manuscript ${projectTitle}:`,
         error instanceof Error ? error.message : 'Unknown error'
       );
       throw error;
@@ -153,7 +146,7 @@ class EmailService {
     to: string,
     name: string,
     projectTitle: string,
-    status: ProposalStatus,
+    status: any,
     feedbackComments?: string
   ): Promise<void> {
     try {
@@ -169,11 +162,11 @@ class EmailService {
         ),
       });
       logger.info(
-        `Full proposal status update email sent to: ${to} for proposal ${projectTitle}`
+        `Full manuscript status update email sent to: ${to} for manuscript ${projectTitle}`
       );
     } catch (error) {
       logger.error(
-        `Failed to send full proposal status update email to ${to} for proposal ${projectTitle}:`,
+        `Failed to send full manuscript status update email to ${to} for manuscript ${projectTitle}:`,
         error instanceof Error ? error.message : 'Unknown error'
       );
       throw error;
@@ -188,8 +181,8 @@ class EmailService {
     comment?: string
   ): Promise<void> {
     const subject = isArchived
-      ? `Your Proposal "${projectTitle}" Has Been Archived`
-      : `Your Proposal "${projectTitle}" Has Been Unarchived`;
+      ? `Your Manuscript "${projectTitle}" Has Been Archived`
+      : `Your Manuscript "${projectTitle}" Has Been Unarchived`;
     try {
       await this.transporter.sendMail({
         from: this.emailFrom,
@@ -203,25 +196,23 @@ class EmailService {
         ),
       });
       logger.info(
-        `${isArchived ? 'Archive' : 'Unarchive'} notification email sent to: ${to} for proposal ${projectTitle}`
+        `${isArchived ? 'Archive' : 'Unarchive'} notification email sent to: ${to} for manuscript ${projectTitle}`
       );
     } catch (error) {
       logger.error(
-        `Failed to send ${isArchived ? 'archive' : 'unarchive'} notification email to ${to} for proposal ${projectTitle}:`,
+        `Failed to send ${isArchived ? 'archive' : 'unarchive'} notification email to ${to} for manuscript ${projectTitle}:`,
         error instanceof Error ? error.message : 'Unknown error'
       );
       throw error;
     }
   }
 
-  async sendProposalNotificationEmail(
+  async sendManuscriptNotificationEmail(
     reviewerEmails: string | string[],
-    researcher: string,
-    proposalTitle: string,
-    submitterType: SubmitterType
+    author: string,
+    manuscriptTitle: string
   ): Promise<void> {
-    const submitterTypeText = this.getSubmitterTypeText(submitterType);
-    const reviewUrl = `${this.frontendUrl}/admin/proposals`;
+    const reviewUrl = `${this.frontendUrl}/admin/manuscripts`;
 
     // Handle comma-separated emails or single email
     const recipients = Array.isArray(reviewerEmails)
@@ -232,20 +223,19 @@ class EmailService {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: recipients.join(','),
-        subject: `New Research Proposal Submission by ${researcher}`,
-        html: proposalNotificationTemplate(
-          researcher,
-          proposalTitle,
-          submitterTypeText,
+        subject: `New Manuscript Submission by ${author}`,
+        html: manuscriptNotificationTemplate(
+          author,
+          manuscriptTitle,
           reviewUrl
         ),
       });
       logger.info(
-        `Proposal notification email sent to reviewers: ${recipients.join(', ')}`
+        `Manuscript notification email sent to reviewers: ${recipients.join(', ')}`
       );
     } catch (error) {
       logger.error(
-        'Failed to send proposal notification email:',
+        'Failed to send manuscript notification email:',
         error instanceof Error ? error.message : 'Unknown error'
       );
     }
@@ -254,22 +244,17 @@ class EmailService {
   async sendSubmissionConfirmationEmail(
     email: string,
     name: string,
-    proposalTitle: string,
-    submitterType: SubmitterType
+    manuscriptTitle: string,
+    isRevision = false
   ): Promise<void> {
-    const submitterTypeText = this.getSubmitterTypeText(submitterType);
-
     try {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: `Research Proposal Submission Confirmation`,
-        html: submissionConfirmationTemplate(
-          name,
-          proposalTitle,
-          submitterType,
-          submitterTypeText
-        ),
+        subject: isRevision
+          ? 'Manuscript Revision Confirmation'
+          : 'Manuscript Submission Confirmation',
+        html: submissionConfirmationTemplate(name, manuscriptTitle, isRevision),
       });
       logger.info(`Submission confirmation email sent to ${email}`);
     } catch (error) {
@@ -290,7 +275,7 @@ class EmailService {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: 'Invitation to join as a Research Proposal Reviewer',
+        subject: 'Invitation to join as a Manuscript Reviewer',
         html: reviewerInvitationTemplate(inviteUrl),
       });
       logger.info(`Reviewer invitation email sent to: ${email}`);
@@ -312,7 +297,7 @@ class EmailService {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: 'Your Research Portal Reviewer Account Credentials',
+        subject: 'Your Manuscript Reviewer Account Credentials',
         html: reviewerCredentialsTemplate(email, password, loginUrl),
       });
       logger.info(`Reviewer credentials email sent to: ${email}`);
@@ -326,8 +311,8 @@ class EmailService {
 
   async sendReviewAssignmentEmail(
     email: string,
-    proposalTitle: string,
-    researcherName: string,
+    manuscriptTitle: string,
+    authorName: string,
     dueDate: Date
   ): Promise<void> {
     const reviewUrl = `${this.frontendUrl}/reviewers/assignments`;
@@ -336,10 +321,10 @@ class EmailService {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: 'New Research Proposal Assignment',
+        subject: 'New Manuscript Assignment',
         html: reviewAssignmentTemplate(
-          proposalTitle,
-          researcherName,
+          manuscriptTitle,
+          authorName,
           reviewUrl,
           dueDate
         ),
@@ -354,13 +339,13 @@ class EmailService {
   }
 
   async sendInvitationEmail(email: string, token: string): Promise<void> {
-    const inviteUrl = `${this.frontendUrl}/researcher-register/${token}`;
+    const inviteUrl = `${this.frontendUrl}/author-register/${token}`;
 
     try {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: 'Invitation to join the Research Portal',
+        subject: 'Invitation to join the Author Portal',
         html: invitationTemplate(inviteUrl),
       });
       logger.info(`Invitation email sent to: ${email}`);
@@ -373,13 +358,13 @@ class EmailService {
   }
 
   async sendCredentialsEmail(email: string, password: string): Promise<void> {
-    const loginUrl = `${this.frontendUrl}/researchers/login`;
+    const loginUrl = `${this.frontendUrl}/authors/login`;
 
     try {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: 'Your Research Portal Account Credentials',
+        subject: 'Your Author Portal Account Credentials',
         html: credentialsTemplate(email, password, loginUrl),
       });
       logger.info(`Credentials email sent to: ${email}`);
@@ -394,7 +379,7 @@ class EmailService {
   async sendReviewReminderEmail(
     email: string,
     reviewerName: string,
-    proposalTitle: string,
+    manuscriptTitle: string,
     dueDate: Date
   ): Promise<void> {
     const reviewUrl = `${this.frontendUrl}/reviewers/dashboard`;
@@ -403,10 +388,10 @@ class EmailService {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: 'Reminder: Research Proposal Review Due Soon',
+        subject: 'Reminder: Manuscript Review Due Soon',
         html: reviewReminderTemplate(
           reviewerName,
-          proposalTitle,
+          manuscriptTitle,
           reviewUrl,
           dueDate
         ),
@@ -423,7 +408,7 @@ class EmailService {
   async sendOverdueReviewNotification(
     email: string,
     reviewerName: string,
-    proposalTitle: string
+    manuscriptTitle: string
   ): Promise<void> {
     const reviewUrl = `${this.frontendUrl}/reviewers/dashboard`;
 
@@ -431,8 +416,8 @@ class EmailService {
       await this.transporter.sendMail({
         from: this.emailFrom,
         to: email,
-        subject: 'OVERDUE: Research Proposal Review',
-        html: overdueReviewTemplate(reviewerName, proposalTitle, reviewUrl),
+        subject: 'OVERDUE: Manuscript Review',
+        html: overdueReviewTemplate(reviewerName, manuscriptTitle, reviewUrl),
       });
       logger.info(`Overdue review notification sent to: ${email}`);
     } catch (error) {
@@ -446,7 +431,7 @@ class EmailService {
   async sendReconciliationAssignmentEmail(
     email: string,
     reviewerName: string,
-    proposalTitle: string,
+    manuscriptTitle: string,
     dueDate: Date,
     reviewCount: number,
     averageScore: number,
@@ -461,7 +446,7 @@ class EmailService {
         subject: 'Reconciliation Review Assignment',
         html: reconciliationAssignmentTemplate(
           reviewerName,
-          proposalTitle,
+          manuscriptTitle,
           reviewUrl,
           dueDate,
           reviewCount,

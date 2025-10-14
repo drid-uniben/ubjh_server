@@ -5,7 +5,7 @@ import Review, {
 } from '../models/review.model';
 import Proposal, {
   SubmitterType,
-} from '../../Proposal_Submission/models/proposal.model';
+} from '../../Manuscript_Submission/models/proposal.model';
 import { NotFoundError } from '../../utils/customErrors';
 import logger from '../../utils/logger';
 import emailService from '../../services/email.service'; // Import emailService
@@ -61,8 +61,8 @@ export const generateAIReviewForProposal = async (
     };
   } catch (error: any) {
     await agenda.now('generate AI review', {
-          proposalId: proposalId,
-        });
+      proposalId: proposalId,
+    });
     logger.info(
       `Dispatched failed AI review job for proposal ${proposalId} to Agenda`
     );

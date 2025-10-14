@@ -3,10 +3,10 @@ import { Request, Response } from 'express';
 import User, { UserRole } from '../../model/user.model';
 import Proposal, {
   ProposalStatus,
-} from '../../Proposal_Submission/models/proposal.model';
+} from '../../Manuscript_Submission/models/proposal.model';
 import Review, { ReviewStatus, ReviewType } from '../models/review.model';
-import Faculty from '../../Proposal_Submission/models/faculty.model';
-import Department from '../../Proposal_Submission/models/department.model';
+import Faculty from '../../Manuscript_Submission/models/faculty.model';
+import Department from '../../Manuscript_Submission/models/department.model';
 import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
 import emailService from '../../services/email.service';

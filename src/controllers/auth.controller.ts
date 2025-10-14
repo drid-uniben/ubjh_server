@@ -79,26 +79,26 @@ class AuthController {
 
   // Add these methods to your existing AuthController class
 
-  researcherLogin = asyncHandler(
+  authorLogin = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { email, password } = req.body;
-      logger.info(`Researcher login attempt for email: ${email}`);
+      logger.info(`Author login attempt for email: ${email}`);
 
       const user = await User.findOne({ email }).select('+password');
       if (!user) {
-        logger.warn(`No researcher account found for email: ${email}`);
+        logger.warn(`No author account found for email: ${email}`);
         throw new UnauthorizedError('No account found with this email address');
       }
 
-      if (user.role !== 'researcher') {
-        logger.warn(`Non-researcher user attempted researcher login: ${email}`);
+      if (user.role !== 'author') {
+        logger.warn(`Non-author user attempted author login: ${email}`);
         throw new UnauthorizedError(
-          'Access denied: Researcher privileges required'
+          'Access denied: author privileges required'
         );
       }
 
       if (!user.isActive) {
-        logger.warn(`Inactive researcher attempted login: ${email}`);
+        logger.warn(`Inactive author attempted login: ${email}`);
         throw new UnauthorizedError(
           'Your account is not active. Please contact administrator.'
         );
@@ -106,7 +106,7 @@ class AuthController {
 
       const isPasswordCorrect = await user.comparePassword(password);
       if (!isPasswordCorrect) {
-        logger.warn(`Incorrect password attempt for researcher: ${email}`);
+        logger.warn(`Incorrect password attempt for author: ${email}`);
         throw new UnauthorizedError('Incorrect password');
       }
 
@@ -121,7 +121,7 @@ class AuthController {
       await user.save();
 
       tokenService.setRefreshTokenCookie(res, tokens.refreshToken);
-      logger.info(`Researcher login successful for: ${email}`);
+      logger.info(`Author login successful for: ${email}`);
 
       const response: IAuthResponse = {
         success: true,

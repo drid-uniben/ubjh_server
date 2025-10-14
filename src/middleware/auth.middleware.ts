@@ -45,8 +45,8 @@ const authenticateAdminToken = async (
   }
 };
 
-// Authenticate researcher access token
-const authenticateResearcherToken = async (
+// Authenticate author access token
+const authenticateAuthorToken = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -68,8 +68,8 @@ const authenticateResearcherToken = async (
       throw new UnauthorizedError('User not found');
     }
 
-    if (user.role !== UserRole.RESEARCHER) {
-      throw new ForbiddenError('Access denied: Researcher privileges required');
+    if (user.role !== UserRole.AUTHOR) {
+      throw new ForbiddenError('Access denied: Author privileges required');
     }
 
     if (!user.isActive) {
@@ -144,7 +144,7 @@ const authenticateToken = async (
       throw new UnauthorizedError('User not found');
     }
 
-    if (!['admin', 'researcher', 'reviewer'].includes(user.role)) {
+    if (!['admin', 'author', 'reviewer'].includes(user.role)) {
       throw new ForbiddenError('Invalid user role');
     }
 
@@ -206,7 +206,7 @@ const rateLimiter = (limit: number, windowMs: number) => {
 
 export {
   authenticateAdminToken,
-  authenticateResearcherToken,
+  authenticateAuthorToken,
   authenticateReviewerToken,
   authenticateToken,
   authorizeModeration,

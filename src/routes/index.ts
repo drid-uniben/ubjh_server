@@ -1,7 +1,5 @@
 import { Router } from 'express';
-import submitRoutes from '../Proposal_Submission/routes/submit.routes';
-import facultyRoutes from '../Proposal_Submission/routes/faculty.routes';
-import departmentRoutes from '../Proposal_Submission/routes/department.routes';
+import submitRoutes from '../Manuscript_Submission/routes/submitManuscript.routes';
 import adminRoutes from './admin.routes';
 import authRoutes from './auth.routes';
 import researcherRoutes from '../researchers/routes/index';
@@ -12,19 +10,17 @@ const router = Router();
 
 // Mount route groups
 router.use('/submit', submitRoutes);
-router.use('/faculties', facultyRoutes);
-router.use('/departments', departmentRoutes);
 router.use('/admin', adminRoutes);
 router.use('/auth', authRoutes);
-router.use('/', researcherRoutes);
-router.use('/reviewer', reviewerRoutes);
-router.use('/reviewsys', reviewSystemRoutes);
+//router.use('/', researcherRoutes);
+//router.use('/reviewer', reviewerRoutes);
+//router.use('/reviewsys', reviewSystemRoutes);
 
 // Root route
 router.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'UNIBEN Research Submission Portal API is running',
+    message: 'UNIBEN Journal for Humanities API is running',
   });
 });
 

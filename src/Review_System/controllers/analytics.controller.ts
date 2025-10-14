@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Proposal from '../../Proposal_Submission/models/proposal.model';
+import Proposal from '../../Manuscript_Submission/models/proposal.model';
 import FullProposal from '../../researchers/models/fullProposal.model';
 import { UnauthorizedError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';

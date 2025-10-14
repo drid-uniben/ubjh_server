@@ -2,9 +2,9 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import User, { UserRole } from '../../model/user.model';
-import Proposal from '../../Proposal_Submission/models/proposal.model';
-import Faculty from '../../Proposal_Submission/models/faculty.model';
-import Department from '../../Proposal_Submission/models/department.model';
+import Proposal from '../../Manuscript_Submission/models/proposal.model';
+import Faculty from '../../Manuscript_Submission/models/faculty.model';
+import Department from '../../Manuscript_Submission/models/department.model';
 import Review, { ReviewStatus } from '../../Review_System/models/review.model';
 import emailService from '../../services/email.service';
 import {
@@ -414,7 +414,10 @@ class ReviewerController {
       );
 
       // Combine in-progress and overdue reviews to represent "assigned proposals reviews" (incomplete ones)
-      const assignedProposalsReviews = [...inProgressReviews, ...overdueReviews];
+      const assignedProposalsReviews = [
+        ...inProgressReviews,
+        ...overdueReviews,
+      ];
 
       logger.info(`Admin ${user._id} retrieved reviewer ${id}`);
 

@@ -3,13 +3,13 @@ import { Request, Response } from 'express';
 import User, { UserRole, IUser } from '../../model/user.model';
 import Proposal, {
   IProposal,
-} from '../../Proposal_Submission/models/proposal.model';
+} from '../../Manuscript_Submission/models/proposal.model';
 import Review, {
   ReviewStatus,
   ReviewType,
   IReview,
 } from '../models/review.model';
-import Faculty from '../../Proposal_Submission/models/faculty.model';
+import Faculty from '../../Manuscript_Submission/models/faculty.model';
 import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
 import emailService from '../../services/email.service';

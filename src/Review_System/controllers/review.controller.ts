@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Review, { ReviewStatus, ReviewType } from '../models/review.model';
-import Proposal from '../../Proposal_Submission/models/proposal.model';
+import Proposal from '../../Manuscript_Submission/models/proposal.model';
 import Award, { AwardStatus } from '../models/award.model';
 import { NotFoundError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';

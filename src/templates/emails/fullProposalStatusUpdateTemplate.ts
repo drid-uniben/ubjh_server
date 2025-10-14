@@ -1,16 +1,16 @@
 import { commonStyles, submissionConfirmationFooter } from './styles';
-import { ProposalStatus } from '../../Proposal_Submission/models/proposal.model';
+import { ManuscriptStatus } from '../../Manuscript_Submission/models/manuscript.model';
 
 export const fullProposalStatusUpdateTemplate = (
   name: string,
   projectTitle: string,
-  status: ProposalStatus,
+  status: ManuscriptStatus,
   feedbackComments?: string
 ): string => {
   let subjectLine = '';
   let bodyContent = '';
 
-  if (status === ProposalStatus.APPROVED) {
+  if (status === ManuscriptStatus.APPROVED) {
     subjectLine =
       'Congratulations! Your Full Proposal Has Been Shortlisted And Approved';
     bodyContent = `
@@ -21,7 +21,7 @@ export const fullProposalStatusUpdateTemplate = (
     bodyContent += `
         <p>You will recieve further information by the directorate soon, firstly login into your dashboard and click on view deatils for the approved proposal to view the next steps instructions.</p>
     `;
-  } else if (status === ProposalStatus.REJECTED) {
+  } else if (status === ManuscriptStatus.REJECTED) {
     subjectLine = 'Update on Your Full Proposal Submission: Decision Made';
     bodyContent = `
         <p>Dear ${name},</p>

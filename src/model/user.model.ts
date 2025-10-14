@@ -1,34 +1,39 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
+// User roles in the system
 export enum UserRole {
   ADMIN = 'admin',
-  RESEARCHER = 'researcher',
+  AUTHOR = 'author',
   REVIEWER = 'reviewer',
 }
 
+// User interface extending Mongoose Document
 export interface IUser extends Document {
   name: string;
   email: string;
   password?: string;
   role: UserRole;
-  academicTitle?: string;
-  phoneNumber: string;
+  faculty: string;
+  institution: string;
+  manuscripts?: Types.ObjectId[];
+  assignedJournals?: Types.ObjectId[]; // For reviewers
+  completedReviews?: Types.ObjectId[]; // For reviewers
+  isActive: boolean;
   refreshToken?: string;
   inviteToken?: string;
   inviteTokenExpires?: Date;
-  journals: Types.ObjectId[];
-  assignedReviews?: Types.ObjectId[];
-  reviews?: Types.ObjectId[];
-  isActive: boolean;
-  invitationStatus: 'pending' | 'added' | 'accepted' | 'expired';
+  invitationStatus: 'pending' | 'accepted' | 'added' | 'expired';
   credentialsSent: boolean;
   credentialsSentAt?: Date;
   lastLogin?: Date;
   createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  generateInviteToken(): string;
 }
 
+// User Schema Definition
 const UserSchema: Schema<IUser> = new Schema(
   {
     name: {
@@ -53,16 +58,40 @@ const UserSchema: Schema<IUser> = new Schema(
     role: {
       type: String,
       enum: Object.values(UserRole),
-      default: UserRole.RESEARCHER,
+      default: UserRole.AUTHOR,
     },
-    academicTitle: {
+    faculty: {
       type: String,
       trim: true,
+      // Will contain the faculty and department here seperated by a comma
     },
-    phoneNumber: {
+    institution: {
       type: String,
       trim: true,
+      // Open to all institutions - not restricted to UNIBEN
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    manuscripts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Manuscript',
+      },
+    ],
+    assignedJournals: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Manuscript',
+      },
+    ],
+    completedReviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Review',
+      },
+    ],
     refreshToken: {
       type: String,
       select: false,
@@ -73,39 +102,10 @@ const UserSchema: Schema<IUser> = new Schema(
     inviteTokenExpires: {
       type: Date,
     },
-    journals: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Journal',
-      },
-    ],
-    assignedReviews: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Journal',
-      },
-    ],
-    reviews: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Review',
-      },
-    ],
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
     invitationStatus: {
       type: String,
       enum: ['pending', 'accepted', 'added', 'expired'],
       default: 'pending',
-    },
-    credentialsSent: {
-      type: Boolean,
-      default: false,
-    },
-    credentialsSentAt: {
-      type: Date,
     },
     lastLogin: {
       type: Date,
@@ -120,9 +120,12 @@ const UserSchema: Schema<IUser> = new Schema(
   }
 );
 
+// Indexes for performance optimization
+UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.index({ role: 1, isActive: 1 });
+UserSchema.index({ role: 1, faculty: 1, isActive: 1 }); // For reviewer assignment
 
-UserSchema.pre('save', async function (next) {
+UserSchema.pre<IUser>('save', async function (next) {
   if (this.password && this.isModified('password')) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -137,4 +140,4 @@ UserSchema.methods.comparePassword = async function (
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-export default mongoose.model<IUser>('User', UserSchema, 'users');
+export default mongoose.model<IUser>('User', UserSchema, 'Users');

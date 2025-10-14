@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { Request, Response, NextFunction } from 'express';
 import Review, { ReviewType, ReviewStatus } from '../models/review.model';
-import Proposal from '../../Proposal_Submission/models/proposal.model';
+import Proposal from '../../Manuscript_Submission/models/proposal.model';
 import { NotFoundError, BadRequestError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';
 import mongoose from 'mongoose';

@@ -1,54 +1,49 @@
 import { commonStyles, submissionConfirmationFooter } from './styles';
-import { ProposalStatus } from '../../Proposal_Submission/models/proposal.model';
+import { ManuscriptStatus } from '../../Manuscript_Submission/models/manuscript.model';
 
-export const proposalStatusUpdateTemplate = (
+export const manuscriptStatusUpdateTemplate = (
   name: string,
-  projectTitle: string,
-  status: ProposalStatus,
+  manuscriptTitle: string,
+  status: ManuscriptStatus,
   fundingAmount?: number,
   feedbackComments?: string
 ): string => {
   let subjectLine = '';
   let bodyContent = '';
 
-  if (status === ProposalStatus.APPROVED) {
-    subjectLine =
-      'Congratulations! Your Proposal Has Been Approved for the next stage';
+  if (status === ManuscriptStatus.APPROVED) {
+    subjectLine = 'Congratulations! Your Manuscript Has Been Approved';
     bodyContent = `
         <p>Dear ${name},</p>
-        <p>We are pleased to inform you that your proposal "<strong>${projectTitle}</strong>" has been approved.</p>
-        <p>Your concept note has been shortlisted for the TETFund Institutional-Based Research (IBR) Grant.</p>
+        <p>We are pleased to inform you that your manuscript "<strong>${manuscriptTitle}</strong>" has been approved.</p>
     `;
-    if (fundingAmount) {
-      bodyContent += `<p>You have the opportunity of being awarded a funding of NGN ${fundingAmount.toLocaleString()} after the next stage</p>`;
-    }
     bodyContent += `
-        <p>You are hereby invited to submit a full proposal on the portal on or before 31st July 2025.</p>
-        <p>Login into your researcher dashboard using the credentials sent previously to view the full proposal template and submit your full proposal.</p>
+        <p>You manuscript will be processed for indexing and DOI integration and then published on the Uniben Journal for Humanities.</p>
+        <p>Login into your author dashboard using the credentials sent previously to view the status of your manuscript.</p>
     `;
-  } else if (status === ProposalStatus.REJECTED) {
-    subjectLine = 'Update on Your Proposal Submission: Decision Made';
+  } else if (status === ManuscriptStatus.REJECTED) {
+    subjectLine = 'Update on Your Manuscript Submission: Decision Made';
     bodyContent = `
         <p>Dear ${name},</p>
-        <p>We regret to inform you that your proposal "<strong>${projectTitle}</strong>" was not selected for funding at this time.</p>
+        <p>We regret to inform you that your manuscript "<strong>${manuscriptTitle}</strong>" was not approved for publication at this time.</p>
     `;
     if (feedbackComments) {
       bodyContent += `
         <div class="feedback">
-            <p><strong>Feedback from the review committee:</strong></p>
+            <p><strong>Feedback from the Editor:</strong></p>
             <p>${feedbackComments}</p>
         </div>
       `;
     }
     bodyContent += `
-        <p>We appreciate the time and effort you put into your proposal.</p>
-        <p>While it wasn't selected this time, we encourage you to consider the feedback and apply again in the future.</p>
+        <p>We appreciate the time and effort you put into your manuscript.</p>
+        <p>While it wasn't selected this time, we encourage you to consider the feedback and submit a manuscript again in the future.</p>
       `;
   } else {
-    subjectLine = 'Update on your Proposal Submission';
+    subjectLine = 'Update on your Manuscript Submission';
     bodyContent = `
         <p>Dear ${name},</p>
-        <p>This is an update regarding your proposal "<strong>${projectTitle}</strong>". Its current status is: <strong>${status}</strong>.</p>
+        <p>This is an update regarding your manuscript "<strong>${manuscriptTitle}</strong>". Its current status is: <strong>${status}</strong>.</p>
     `;
   }
 

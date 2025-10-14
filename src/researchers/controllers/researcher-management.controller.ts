@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import User, { UserRole } from '../../model/user.model';
-import Proposal from '../../Proposal_Submission/models/proposal.model';
+import Proposal from '../../Manuscript_Submission/models/proposal.model';
 import { BadRequestError, NotFoundError } from '../../utils/customErrors';
 import emailService from '../../services/email.service';
 import generateSecurePassword from '../../utils/passwordGenerator';

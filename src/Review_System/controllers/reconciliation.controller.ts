@@ -7,14 +7,14 @@ import Review, {
 import Proposal, {
   IProposal,
   ProposalStatus,
-} from '../../Proposal_Submission/models/proposal.model';
+} from '../../Manuscript_Submission/models/proposal.model';
 import User, { UserRole, IUser } from '../../model/user.model'; // Import IUser
 import Award, { AwardStatus, IAward } from '../models/award.model';
 import { NotFoundError, BadRequestError } from '../../utils/customErrors';
 import logger from '../../utils/logger';
 import emailService from '../../services/email.service';
 import mongoose, { Document } from 'mongoose';
-import Faculty from '../../Proposal_Submission/models/faculty.model';
+import Faculty from '../../Manuscript_Submission/models/faculty.model';
 
 interface IReviewerWithCounts extends IUser {
   _id: mongoose.Types.ObjectId; // Explicitly define _id type

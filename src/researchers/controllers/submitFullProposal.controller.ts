@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../../model/user.model';
-import Proposal from '../../Proposal_Submission/models/proposal.model';
+import Proposal from '../../Manuscript_Submission/models/proposal.model';
 import FullProposal from '../models/fullProposal.model';
 import Award from '../../Review_System/models/award.model';
 import asyncHandler from '../../utils/asyncHandler';
