@@ -40,10 +40,15 @@ const startServer = async (): Promise<void> => {
   try {
     await connectDB();
     const server = app.listen(PORT, () => {
-      const { port } = server.address() as AddressInfo;
-      logger.info(
-        `Server running in ${process.env.NODE_ENV} mode on port ${port}`
-      );
+      const address = server.address();
+      if (address) {
+        const { port } = address as AddressInfo;
+        logger.info(
+          `Server running in ${process.env.NODE_ENV} mode on port ${port}`
+        );
+      } else {
+        logger.error('Could not determine server address. The server may not be listening correctly.');
+      }
     });
   } catch (error: unknown) {
     logger.error(

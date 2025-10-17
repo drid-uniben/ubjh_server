@@ -1,38 +1,48 @@
 import { Router } from 'express';
-import ReassignReviewController from '../controllers/reAssignReviewer.controller';
+import reassignReviewController from '../controllers/reAssignReviewer.controller';
 import { authenticateAdminToken } from '../../middleware/auth.middleware';
 import validateRequest from '../../middleware/validateRequest';
 import { z } from 'zod';
 
 const router = Router();
 
-const proposalIdSchema = z.object({
+const reassignSchema = z.object({
   params: z.object({
-    proposalId: z
+    reviewId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid review ID format'),
+  }),
+  body: z.object({
+      assignmentType: z.enum(['automatic', 'manual']),
+      newReviewerId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid reviewer ID format').optional(),
+  }),
+});
+
+const manuscriptIdSchema = z.object({
+  params: z.object({
+    manuscriptId: z
       .string()
-      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid proposal ID format'),
+      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid manuscript ID format'),
   }),
 });
 
 router.put(
-  '/regular/:proposalId',
+  '/:reviewId',
   authenticateAdminToken,
-  validateRequest(proposalIdSchema),
-  ReassignReviewController.reassignRegularReview
-);
-
-router.put(
-  '/reconciliation/:proposalId',
-  authenticateAdminToken,
-  validateRequest(proposalIdSchema),
-  ReassignReviewController.reassignReconciliationReview
+  validateRequest(reassignSchema),
+  reassignReviewController.reassignReview
 );
 
 router.get(
-  '/eligible-reviewers/:proposalId',
+  '/eligible-reviewers/:manuscriptId',
   authenticateAdminToken,
-  validateRequest(proposalIdSchema),
-  ReassignReviewController.getEligibleReviewers
+  validateRequest(manuscriptIdSchema),
+  reassignReviewController.getEligibleReviewers
+);
+
+router.get(
+    '/existing-reviewers/:manuscriptId',
+    authenticateAdminToken,
+    validateRequest(manuscriptIdSchema),
+    reassignReviewController.getExistingReviewers
 );
 
 export default router;

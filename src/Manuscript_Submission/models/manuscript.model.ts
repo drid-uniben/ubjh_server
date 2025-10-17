@@ -4,6 +4,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 export enum ManuscriptStatus {
   SUBMITTED = 'submitted',
   UNDER_REVIEW = 'under_review',
+  IN_RECONCILIATION = 'in_reconciliation',
   APPROVED = 'approved',
   REJECTED = 'rejected',
   MINOR_REVISION = 'minor_revision',

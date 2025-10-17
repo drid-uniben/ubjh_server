@@ -1,8 +1,8 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
+import { ReviewDecision } from '../../Manuscript_Submission/models/manuscript.model';
 
 export const ReviewType = {
   HUMAN: 'human',
-  AI: 'ai',
   RECONCILIATION: 'reconciliation',
 } as const;
 
@@ -16,26 +16,27 @@ export const ReviewStatus = {
 
 export type ReviewStatus = (typeof ReviewStatus)[keyof typeof ReviewStatus];
 
-export interface IScore {
-  relevanceToNationalPriorities: number;
-  originalityAndInnovation: number;
-  clarityOfResearchProblem: number;
+export interface IScores {
+  originality: number;
   methodology: number;
-  literatureReview: number;
-  teamComposition: number;
-  feasibilityAndTimeline: number;
-  budgetJustification: number;
-  expectedOutcomes: number;
-  sustainabilityAndScalability: number;
+  clarity: number;
+  relevance: number;
+  literature: number;
+  results: number;
+  contribution: number;
 }
 
 export interface IReview extends Document {
-  proposal: Types.ObjectId;
-  reviewer: Types.ObjectId | null; // null for AI reviews
+  manuscript: Types.ObjectId;
+  reviewer: Types.ObjectId;
   reviewType: ReviewType;
-  scores: IScore;
-  comments: string;
+  scores: IScores;
   totalScore: number;
+  comments: {
+    commentsForAuthor?: string;
+    confidentialCommentsToEditor?: string;
+  };
+  reviewDecision?: ReviewDecision;
   status: ReviewStatus;
   dueDate: Date;
   completedAt?: Date;
@@ -45,15 +46,15 @@ export interface IReview extends Document {
 
 const ReviewSchema: Schema<IReview> = new Schema(
   {
-    proposal: {
+    manuscript: {
       type: Schema.Types.ObjectId,
-      ref: 'Proposal',
-      required: [true, 'Proposal reference is required'],
+      ref: 'Manuscript',
+      required: [true, 'Manuscript reference is required'],
     },
     reviewer: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      default: null, // null for AI reviews
+      required: true,
     },
     reviewType: {
       type: String,
@@ -61,74 +62,25 @@ const ReviewSchema: Schema<IReview> = new Schema(
       required: [true, 'Review type is required'],
     },
     scores: {
-      relevanceToNationalPriorities: {
-        type: Number,
-        min: 0,
-        max: 10,
-        default: 0,
-      },
-      originalityAndInnovation: {
-        type: Number,
-        min: 0,
-        max: 15,
-        default: 0,
-      },
-      clarityOfResearchProblem: {
-        type: Number,
-        min: 0,
-        max: 10,
-        default: 0,
-      },
-      methodology: {
-        type: Number,
-        min: 0,
-        max: 15,
-        default: 0,
-      },
-      literatureReview: {
-        type: Number,
-        min: 0,
-        max: 10,
-        default: 0,
-      },
-      teamComposition: {
-        type: Number,
-        min: 0,
-        max: 10,
-        default: 0,
-      },
-      feasibilityAndTimeline: {
-        type: Number,
-        min: 0,
-        max: 10,
-        default: 0,
-      },
-      budgetJustification: {
-        type: Number,
-        min: 0,
-        max: 10,
-        default: 0,
-      },
-      expectedOutcomes: {
-        type: Number,
-        min: 0,
-        max: 5,
-        default: 0,
-      },
-      sustainabilityAndScalability: {
-        type: Number,
-        min: 0,
-        max: 5,
-        default: 0,
-      },
-    },
-    comments: {
-      type: String,
-      default: '',
+      originality: { type: Number, default: 0 },
+      methodology: { type: Number, default: 0 },
+      clarity: { type: Number, default: 0 },
+      relevance: { type: Number, default: 0 },
+      literature: { type: Number, default: 0 },
+      results: { type: Number, default: 0 },
+      contribution: { type: Number, default: 0 },
     },
     totalScore: {
       type: Number,
       default: 0,
+    },
+    comments: {
+      commentsForAuthor: { type: String, trim: true },
+      confidentialCommentsToEditor: { type: String, trim: true },
+    },
+    reviewDecision: {
+      type: String,
+      enum: Object.values(ReviewDecision),
     },
     status: {
       type: String,
@@ -142,31 +94,79 @@ const ReviewSchema: Schema<IReview> = new Schema(
     completedAt: {
       type: Date,
     },
-    createdAt: Date,
-    updatedAt: Date,
   },
   {
     timestamps: true,
   }
 );
 
-// Calculate total score before saving
 ReviewSchema.pre<IReview>('save', function (next) {
-  const scores = this.scores;
-  if (scores) {
+  if (this.isModified('scores')) {
     this.totalScore =
-      (scores.relevanceToNationalPriorities || 0) +
-      (scores.originalityAndInnovation || 0) +
-      (scores.clarityOfResearchProblem || 0) +
-      (scores.methodology || 0) +
-      (scores.literatureReview || 0) +
-      (scores.teamComposition || 0) +
-      (scores.feasibilityAndTimeline || 0) +
-      (scores.budgetJustification || 0) +
-      (scores.expectedOutcomes || 0) +
-      (scores.sustainabilityAndScalability || 0);
+      (this.scores.originality || 0) +
+      (this.scores.methodology || 0) +
+      (this.scores.clarity || 0) +
+      (this.scores.relevance || 0) +
+      (this.scores.literature || 0) +
+      (this.scores.results || 0) +
+      (this.scores.contribution || 0);
   }
   next();
 });
+
+ReviewSchema.statics.checkDiscrepancy = async function (
+  manuscriptId: Types.ObjectId | string
+): Promise<boolean> {
+  const reviews = await this.find({
+    manuscript: manuscriptId,
+    reviewType: ReviewType.HUMAN,
+    status: ReviewStatus.COMPLETED,
+  });
+
+  if (reviews.length < 2) {
+    return false;
+  }
+
+  const [review1, review2] = reviews;
+  return review1.reviewDecision !== review2.reviewDecision;
+};
+
+ReviewSchema.statics.getByManuscript = function (
+  manuscriptId: Types.ObjectId | string
+) {
+  return this.find({ manuscript: manuscriptId })
+    .populate('reviewer', 'name email')
+    .sort({ createdAt: -1 });
+};
+
+ReviewSchema.statics.getPendingByReviewer = function (
+  reviewerId: Types.ObjectId | string
+) {
+  return this.find({
+    reviewer: reviewerId,
+    status: { $in: [ReviewStatus.IN_PROGRESS, ReviewStatus.OVERDUE] },
+  })
+    .populate('manuscript', 'title abstract')
+    .sort({ dueDate: 1 });
+};
+
+ReviewSchema.statics.getCompletedByReviewer = function (
+  reviewerId: Types.ObjectId | string
+) {
+  return this.find({
+    reviewer: reviewerId,
+    status: ReviewStatus.COMPLETED,
+  })
+    .populate('manuscript', 'title abstract')
+    .sort({ completedAt: -1 });
+};
+
+ReviewSchema.statics.updateOverdueReviews = async function () {
+  const now = new Date();
+  return this.updateMany(
+    { status: ReviewStatus.IN_PROGRESS, dueDate: { $lt: now } },
+    { $set: { status: ReviewStatus.OVERDUE } }
+  );
+};
 
 export default mongoose.model<IReview>('Review', ReviewSchema, 'Reviews');

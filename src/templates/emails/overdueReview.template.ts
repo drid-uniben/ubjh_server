@@ -2,9 +2,24 @@ import { commonStyles, commonFooter } from './styles';
 
 export const overdueReviewTemplate = (
   reviewerName: string,
-  proposalTitle: string,
-  reviewUrl: string
-): string => `
+  manuscriptTitle: string,
+  reviewUrl: string,
+  reminderType: '3_WEEKS' | '4_WEEKS' | '5_WEEKS'
+): string => {
+  let reminderMessage = '';
+  switch (reminderType) {
+    case '3_WEEKS':
+      reminderMessage = 'This is a 3-week overdue reminder.';
+      break;
+    case '4_WEEKS':
+      reminderMessage = 'This is a 4-week overdue reminder.';
+      break;
+    case '5_WEEKS':
+      reminderMessage = 'This is a 5-week overdue reminder. Further action may be taken if the review is not submitted soon.';
+      break;
+  }
+
+  return `
 <html>
 <head>
     <style type="text/css">
@@ -21,26 +36,27 @@ export const overdueReviewTemplate = (
 </head>
 <body>
     <div class="header">
-        <h1>OVERDUE: Research Proposal Review</h1>
+        <h1>OVERDUE: Manuscript Review</h1>
     </div>
     
     <div class="content">
         <p>Dear <strong>${reviewerName}</strong>,</p>
         
-        <p>Our records indicate that your review for the following proposal is now <strong>overdue</strong>:</p>
+        <p>Our records indicate that your review for the following manuscript is now <strong>overdue</strong>:</p>
         
-        <div class="proposal-title">"${proposalTitle}"</div>
+        <div class="proposal-title">"${manuscriptTitle}"</div>
         
-        <p class="overdue-notice">This review is past its due date. Please complete it as soon as possible.</p>
+        <p class="overdue-notice">${reminderMessage}</p>
         
-        <p>Your expert evaluation is critical to our research quality assurance process, and the decision on this proposal cannot be finalized without your input.</p>
+        <p>Your expert evaluation is critical to our journal's quality, and the decision on this manuscript cannot be finalized without your input.</p>
         
         <a href="${reviewUrl}" class="button">Complete Review Now</a>
         
-        <p>If you are experiencing difficulties completing the review or need an extension, please inform the Research Directorate immediately.</p>
+        <p>If you are experiencing difficulties completing the review or need an extension, please inform the editorial office immediately.</p>
     </div>
     
     ${commonFooter}
 </body>
 </html>
 `;
+};

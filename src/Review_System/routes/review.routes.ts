@@ -1,17 +1,27 @@
-// src/Review_System/routes/review.routes.ts
 import { Router } from 'express';
 import reviewController from '../controllers/review.controller';
 import { authenticateReviewerToken } from '../../middleware/auth.middleware';
 import validateRequest from '../../middleware/validateRequest';
 import { z } from 'zod';
+import { ReviewDecision } from '../../Manuscript_Submission/models/manuscript.model';
 
 const router = Router();
+const reviewCtrl = new reviewController();
 
-// Validation schemas
 const reviewIdSchema = z.object({
   params: z.object({
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid review ID format'),
   }),
+});
+
+const scoresSchema = z.object({
+  originality: z.number().min(0).max(20),
+  methodology: z.number().min(0).max(20),
+  clarity: z.number().min(0).max(15),
+  relevance: z.number().min(0).max(15),
+  literature: z.number().min(0).max(10),
+  results: z.number().min(0).max(10),
+  contribution: z.number().min(0).max(10),
 });
 
 const submitReviewSchema = z.object({
@@ -19,19 +29,12 @@ const submitReviewSchema = z.object({
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid review ID format'),
   }),
   body: z.object({
-    scores: z.object({
-      relevanceToNationalPriorities: z.number().min(0).max(10),
-      originalityAndInnovation: z.number().min(0).max(15),
-      clarityOfResearchProblem: z.number().min(0).max(10),
-      methodology: z.number().min(0).max(15),
-      literatureReview: z.number().min(0).max(10),
-      teamComposition: z.number().min(0).max(10),
-      feasibilityAndTimeline: z.number().min(0).max(10),
-      budgetJustification: z.number().min(0).max(10),
-      expectedOutcomes: z.number().min(0).max(5),
-      sustainabilityAndScalability: z.number().min(0).max(5),
+    scores: scoresSchema,
+    comments: z.object({
+      commentsForAuthor: z.string().optional(),
+      confidentialCommentsToEditor: z.string().optional(),
     }),
-    comments: z.string(),
+    reviewDecision: z.nativeEnum(ReviewDecision),
   }),
 });
 
@@ -40,52 +43,48 @@ const saveProgressSchema = z.object({
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid review ID format'),
   }),
   body: z.object({
-    scores: z
+    scores: scoresSchema.partial().optional(),
+    comments: z
       .object({
-        relevanceToNationalPriorities: z.number().min(0).max(10).optional(),
-        originalityAndInnovation: z.number().min(0).max(15).optional(),
-        clarityOfResearchProblem: z.number().min(0).max(10).optional(),
-        methodology: z.number().min(0).max(15).optional(),
-        literatureReview: z.number().min(0).max(10).optional(),
-        teamComposition: z.number().min(0).max(10).optional(),
-        feasibilityAndTimeline: z.number().min(0).max(10).optional(),
-        budgetJustification: z.number().min(0).max(10).optional(),
-        expectedOutcomes: z.number().min(0).max(5).optional(),
-        sustainabilityAndScalability: z.number().min(0).max(5).optional(),
+        commentsForAuthor: z.string().optional(),
+        confidentialCommentsToEditor: z.string().optional(),
       })
       .optional(),
-    comments: z.string().optional(),
+    reviewDecision: z.nativeEnum(ReviewDecision).optional(),
   }),
 });
 
-// Reviewer routes
 router.get(
   '/assignments',
   authenticateReviewerToken,
-  reviewController.getReviewerAssignments
+  reviewCtrl.getReviewerAssignments
 );
+
 router.get(
   '/statistics',
   authenticateReviewerToken,
-  reviewController.getReviewerStatistics
+  reviewCtrl.getReviewerStatistics
 );
+
 router.get(
   '/:id',
   authenticateReviewerToken,
   validateRequest(reviewIdSchema),
-  reviewController.getReviewById
+  reviewCtrl.getReviewById
 );
+
 router.post(
   '/:id/submit',
   authenticateReviewerToken,
   validateRequest(submitReviewSchema),
-  reviewController.submitReview
+  reviewCtrl.submitReview
 );
+
 router.patch(
   '/:id/save-progress',
   authenticateReviewerToken,
   validateRequest(saveProgressSchema),
-  reviewController.saveReviewProgress
+  reviewCtrl.saveReviewProgress
 );
 
 export default router;

@@ -78,18 +78,60 @@ class SubmitController {
     return user._id as Types.ObjectId;
   };
 
-  // Submit a new manuscript
   submitManuscript = asyncHandler(
     async (
-      req: Request<{}, {}, IManuscriptRequest>,
+      req: Request<{}, {}, any>,
       res: Response<IManuscriptResponse>
     ): Promise<void> => {
-      const { title, abstract, keywords, submitter, coAuthors } = req.body;
+      // Parse JSON fields from FormData
+      let parsedBody: IManuscriptRequest;
+
+      try {
+        parsedBody = {
+          title: JSON.parse(req.body.title),
+          abstract: JSON.parse(req.body.abstract),
+          keywords: JSON.parse(req.body.keywords),
+          submitter: JSON.parse(req.body.submitter),
+          coAuthors: req.body.coAuthors
+            ? JSON.parse(req.body.coAuthors)
+            : undefined,
+        };
+      } catch (parseError) {
+        res.status(400).json({
+          success: false,
+          message:
+            'Invalid request data format. Please ensure all fields are properly formatted.',
+        });
+        return;
+      }
+
+      const { title, abstract, keywords, submitter, coAuthors } = parsedBody;
+
+      // Validate required fields
+      if (!title || !abstract || !keywords || !submitter) {
+        res.status(400).json({
+          success: false,
+          message:
+            'Missing required fields: title, abstract, keywords, and submitter information are required.',
+        });
+        return;
+      }
 
       if (!req.file) {
         res.status(400).json({
           success: false,
           message: 'Manuscript PDF file is required.',
+        });
+        return;
+      }
+
+      // Validate ORCID format for submitter
+      const orcidRegex = /^\d{4}-\d{4}-\d{4}-\d{3}[0-9X]$/;
+      if (submitter.orcid && !orcidRegex.test(submitter.orcid)) {
+        res.status(400).json({
+          success: false,
+          message:
+            'Invalid ORCID format. Please use the format: 0000-0000-0000-0000',
         });
         return;
       }
@@ -112,11 +154,20 @@ class SubmitController {
       const coAuthorIds: Types.ObjectId[] = [];
       if (coAuthors && coAuthors.length > 0) {
         for (const coAuthor of coAuthors) {
+          // Validate co-author ORCID if provided
+          if (coAuthor.orcid && !orcidRegex.test(coAuthor.orcid)) {
+            res.status(400).json({
+              success: false,
+              message: `Invalid ORCID format for co-author ${coAuthor.name}. Please use the format: 0000-0000-0000-0000`,
+            });
+            return;
+          }
+
           const coAuthorId = await this.findOrCreateUser(
             coAuthor.email,
             coAuthor.name,
-            coAuthor.faculty,
-            coAuthor.affiliation,
+            coAuthor.faculty || '',
+            coAuthor.affiliation || '',
             manuscriptId as Types.ObjectId,
             coAuthor.orcid
           );
@@ -139,6 +190,7 @@ class SubmitController {
         fileSize: req.file.size,
         fileType: req.file.mimetype,
       });
+
       await newManuscript.save();
 
       // Send confirmation email to the submitter
@@ -159,7 +211,8 @@ class SubmitController {
 
       res.status(201).json({
         success: true,
-        message: 'Manuscript submitted successfully and is under review.',
+        message:
+          'Manuscript submitted successfully and is under review. You will receive your login credentials within 24 hours.',
         data: { manuscriptId: (manuscriptId as any).toString() },
       });
     }

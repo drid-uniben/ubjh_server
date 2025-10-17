@@ -6,35 +6,20 @@ import {
 } from '../../middleware/auth.middleware';
 const router = express.Router();
 
-// Apply rate limiting and admin authentication to all admin endpoints
-const adminRateLimiter = rateLimiter(5000, 60 * 60 * 1000); // 5000 requests per hour
+const adminRateLimiter = rateLimiter(5000, 60 * 60 * 1000);
 
 router.get(
-  '/proposals-for-decision',
+  '/',
   authenticateAdminToken,
   adminRateLimiter,
-  decisionsController.getProposalsForDecision
+  decisionsController.getManuscriptsForDecision
 );
 
-router.get(
-  '/export-decisions',
+router.put(
+  '/:manuscriptId/status',
   authenticateAdminToken,
   adminRateLimiter,
-  decisionsController.exportDecisionsReport
-);
-
-router.patch(
-  '/:id/status',
-  authenticateAdminToken,
-  adminRateLimiter,
-  decisionsController.updateProposalStatus
-);
-
-router.post(
-  '/:proposalId/notify-applicants',
-  authenticateAdminToken,
-  adminRateLimiter,
-  decisionsController.notifyApplicants
+  decisionsController.updateManuscriptStatus
 );
 
 export default router;

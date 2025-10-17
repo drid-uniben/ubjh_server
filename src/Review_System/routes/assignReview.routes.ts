@@ -6,24 +6,28 @@ import { z } from 'zod';
 
 const router = Router();
 
-// Define validation schema for proposalId parameter
-const proposalIdSchema = z.object({
+const manuscriptIdSchema = z.object({
   params: z.object({
-    proposalId: z
+    manuscriptId: z
       .string()
-      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid proposal ID format'),
+      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid manuscript ID format'),
   }),
 });
 
-// Route to assign reviewers to a proposal
 router.post(
-  '/assign/:proposalId',
+  '/:manuscriptId',
   authenticateAdminToken,
-  validateRequest(proposalIdSchema),
-  assignReviewController.assignReviewers
+  validateRequest(manuscriptIdSchema),
+  assignReviewController.assignReviewer
 );
 
-// Route to check for overdue reviews (no params needed)
+router.get(
+  '/:manuscriptId/eligible-reviewers',
+  authenticateAdminToken,
+  validateRequest(manuscriptIdSchema),
+  assignReviewController.getEligibleReviewers
+);
+
 router.get(
   '/check-overdue',
   authenticateAdminToken,
