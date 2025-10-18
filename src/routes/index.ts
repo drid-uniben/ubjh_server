@@ -12,8 +12,8 @@ const router = Router();
 router.use('/submit', submitRoutes);
 router.use('/admin', adminRoutes);
 router.use('/auth', authRoutes);
-//router.use('/', researcherRoutes);
-//router.use('/reviewer', reviewerRoutes);
+router.use('/', researcherRoutes);
+router.use('/reviewer', reviewerRoutes);
 //router.use('/reviewsys', reviewSystemRoutes);
 
 // Root route

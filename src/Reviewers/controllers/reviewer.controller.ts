@@ -2,9 +2,7 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
 import User, { UserRole } from '../../model/user.model';
-import Proposal from '../../Manuscript_Submission/models/proposal.model';
-import Faculty from '../../Manuscript_Submission/models/faculty.model';
-import Department from '../../Manuscript_Submission/models/department.model';
+import Manuscript from '../../Manuscript_Submission/models/manuscript.model';
 import Review, { ReviewStatus } from '../../Review_System/models/review.model';
 import emailService from '../../services/email.service';
 import {
@@ -16,12 +14,6 @@ import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
 import generateSecurePassword from '../../utils/passwordGenerator';
 import { Types } from 'mongoose';
-
-interface IReviewerQuery {
-  status?: string;
-  faculty?: string;
-  department?: string;
-}
 
 interface IPaginationOptions {
   page: number;
@@ -75,7 +67,6 @@ class ReviewerController {
         role: UserRole.REVIEWER,
         invitationStatus: 'pending',
         isActive: false,
-        assignedProposals: [],
       });
 
       logger.info(`Created reviewer invitation record for email: ${email}`);
@@ -95,17 +86,13 @@ class ReviewerController {
   completeReviewerProfile = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { token } = req.params;
-      const {
-        name,
-        facultyId,
-        departmentId,
-        phoneNumber,
-        academicTitle,
-        alternativeEmail,
-      } = req.body;
+      const { name, faculty, affiliation } = req.body;
 
       logger.info(
-        `Reviewer profile completion attempt with token: ${token.substring(0, 8)}...`
+        `Reviewer profile completion attempt with token: ${token.substring(
+          0,
+          8
+        )}...`
       );
 
       const hashedToken = crypto
@@ -120,20 +107,12 @@ class ReviewerController {
 
       if (!reviewer) {
         logger.warn(
-          `Invalid or expired reviewer invitation token: ${token.substring(0, 8)}...`
+          `Invalid or expired reviewer invitation token: ${token.substring(
+            0,
+            8
+          )}...`
         );
         throw new BadRequestError('Invalid or expired invitation token');
-      }
-
-      // Validate faculty and department
-      const faculty = await Faculty.findById(facultyId);
-      if (!faculty) {
-        throw new BadRequestError('Invalid faculty selected');
-      }
-
-      const department = await Department.findById(departmentId);
-      if (!department) {
-        throw new BadRequestError('Invalid department selected');
       }
 
       // Generate a secure password for the reviewer
@@ -141,11 +120,8 @@ class ReviewerController {
 
       // Update reviewer profile
       reviewer.name = name;
-      reviewer.faculty = faculty._id as unknown as Types.ObjectId;
-      reviewer.department = department._id as unknown as Types.ObjectId;
-      reviewer.phoneNumber = phoneNumber;
-      reviewer.academicTitle = academicTitle;
-      reviewer.alternativeEmail = alternativeEmail;
+      reviewer.faculty = faculty;
+      reviewer.affiliation = affiliation;
       reviewer.password = generatedPassword;
       reviewer.isActive = true;
       reviewer.inviteToken = undefined;
@@ -181,15 +157,7 @@ class ReviewerController {
         );
       }
 
-      const {
-        email,
-        name,
-        facultyId,
-        departmentId,
-        phoneNumber,
-        academicTitle,
-        alternativeEmail,
-      } = req.body;
+      const { email, name, faculty, affiliation } = req.body;
 
       logger.info(
         `Manual reviewer profile creation request for email: ${email}`
@@ -204,17 +172,6 @@ class ReviewerController {
         throw new BadRequestError('Email already registered as a reviewer');
       }
 
-      // Validate faculty and department
-      const faculty = await Faculty.findById(facultyId);
-      if (!faculty) {
-        throw new BadRequestError('Invalid faculty selected');
-      }
-
-      const department = await Department.findById(departmentId);
-      if (!department) {
-        throw new BadRequestError('Invalid department selected');
-      }
-
       // Generate a secure password for the reviewer
       const generatedPassword = generateSecurePassword();
 
@@ -222,16 +179,12 @@ class ReviewerController {
       const newReviewer = await User.create({
         email,
         name,
-        faculty: faculty._id as unknown as Types.ObjectId,
-        department: department._id as unknown as Types.ObjectId,
-        phoneNumber,
-        academicTitle,
-        alternativeEmail,
+        faculty,
+        affiliation,
         password: generatedPassword,
         role: UserRole.REVIEWER,
         isActive: true,
         invitationStatus: 'added',
-        assignedProposals: [],
       });
 
       logger.info(`Reviewer profile manually created for: ${email}`);
@@ -249,8 +202,7 @@ class ReviewerController {
           email: newReviewer.email,
           name: newReviewer.name,
           faculty: newReviewer.faculty,
-          department: newReviewer.department,
-          academicTitle: newReviewer.academicTitle,
+          affiliation: newReviewer.affiliation,
         },
       });
     }
@@ -272,7 +224,6 @@ class ReviewerController {
         limit = 10,
         status,
         faculty,
-        department,
         sort = 'createdAt',
         order = 'desc',
       } = req.query;
@@ -285,7 +236,6 @@ class ReviewerController {
       // Apply additional filters if provided
       if (status) query.invitationStatus = status as string;
       if (faculty) query.faculty = faculty as string;
-      if (department) query.department = department as string;
 
       // Build sort object
       const sortObj: Record<string, 1 | -1> = {};
@@ -301,11 +251,9 @@ class ReviewerController {
         .sort(sortObj)
         .skip((options.page - 1) * options.limit)
         .limit(options.limit)
-        .populate('faculty', 'title code')
-        .populate('department', 'title code')
         .populate({
-          path: 'assignedProposals',
-          select: 'projectTitle submitter', // Select relevant fields from Proposal
+          path: 'assignedJournals',
+          select: 'title submitter', // Select relevant fields from Manuscript
           populate: {
             path: 'submitter',
             select: 'name email', // Select relevant fields from Submitter (User)
@@ -318,7 +266,7 @@ class ReviewerController {
       const reviewersWithDetails = await Promise.all(
         reviewers.map(async (reviewer) => {
           // Get assigned reviews (all reviews assigned to this reviewer)
-          // This count is based on the Review model, not directly from User.assignedProposals
+          // This count is based on the Review model, not directly from User.assignedJournals
           const assignedReviewsCount = await Review.countDocuments({
             reviewer: reviewer._id,
           });
@@ -335,12 +283,6 @@ class ReviewerController {
               ? Math.round((completedReviewsCount / assignedReviewsCount) * 100)
               : 0;
 
-          // Fetch all reviews assigned to this reviewer
-          const allAssignedReviews = await Review.find({
-            reviewer: reviewer._id,
-            reviewType: { $ne: 'ai' }, // Exclude AI reviews if necessary
-          }).populate('proposal', 'projectTitle submitterType'); // Populate proposal details for each review
-
           return {
             ...reviewer.toObject(),
             statistics: {
@@ -348,8 +290,8 @@ class ReviewerController {
               completed: completedReviewsCount,
               completionRate,
             },
-            // Include the populated assignedProposals directly
-            assignedProposals: reviewer.assignedProposals,
+            // Include the populated assignedJournals directly
+            assignedJournals: reviewer.assignedJournals,
           };
         })
       );
@@ -382,9 +324,7 @@ class ReviewerController {
       const reviewer = await User.findOne({
         _id: id,
         role: UserRole.REVIEWER,
-      })
-        .populate('faculty', 'title code')
-        .populate('department', 'title code');
+      });
       if (!reviewer) {
         throw new NotFoundError('Reviewer not found');
       }
@@ -392,10 +332,9 @@ class ReviewerController {
       // Fetch all reviews assigned to this reviewer
       const allAssignedReviews = await Review.find({
         reviewer: reviewer._id,
-        reviewType: { $ne: 'ai' }, // Exclude AI reviews if necessary, based on the getReviewerDashboard
       }).populate({
-        path: 'proposal',
-        select: 'projectTitle submitterType submitter',
+        path: 'manuscript',
+        select: 'title submitter',
         populate: {
           path: 'submitter',
           select: 'name email',
@@ -413,11 +352,8 @@ class ReviewerController {
         (review) => review.status === ReviewStatus.OVERDUE
       );
 
-      // Combine in-progress and overdue reviews to represent "assigned proposals reviews" (incomplete ones)
-      const assignedProposalsReviews = [
-        ...inProgressReviews,
-        ...overdueReviews,
-      ];
+      // Combine in-progress and overdue reviews to represent "assigned journals reviews" (incomplete ones)
+      const assignedJournalsReviews = [...inProgressReviews, ...overdueReviews];
 
       logger.info(`Admin ${user._id} retrieved reviewer ${id}`);
 
@@ -425,8 +361,8 @@ class ReviewerController {
         success: true,
         data: {
           ...reviewer.toObject(), // Convert Mongoose document to plain object
-          // Set assignedProposals to be the list of incomplete reviews as per user's clarification
-          assignedProposals: assignedProposalsReviews,
+          // Set assignedJournals to be the list of incomplete reviews as per user's clarification
+          assignedJournals: assignedJournalsReviews,
           allAssignedReviews, // Still provide all assigned review documents
           completedReviews,
           inProgressReviews,
@@ -459,10 +395,10 @@ class ReviewerController {
         throw new NotFoundError('Reviewer not found');
       }
 
-      // Check if reviewer has assigned proposals
-      if ((reviewer.assignedProposals ?? []).length > 0) {
+      // Check if reviewer has assigned journals
+      if ((reviewer.assignedJournals ?? []).length > 0) {
         throw new BadRequestError(
-          'Cannot delete reviewer with assigned proposals. Please reassign them first.'
+          'Cannot delete reviewer with assigned journals. Please reassign them first.'
         );
       }
 
@@ -591,37 +527,34 @@ class ReviewerController {
         throw new NotFoundError('Reviewer not found');
       }
 
-      // Get assigned proposals with details
-      const assignedProposals = await Proposal.find({
-        _id: { $in: reviewer.assignedProposals },
+      // Get assigned journals with details
+      const assignedJournals = await Manuscript.find({
+        _id: { $in: reviewer.assignedJournals },
       })
         .populate('submitter', 'name email')
-        .populate('faculty', 'name code')
-        .populate('department', 'name code')
-        .select('-docFile -cvFile');
+        .select('-pdfFile');
 
       // Get completed reviews
       const completedReviews = await Review.find({
         reviewer: userId,
         status: ReviewStatus.COMPLETED,
-      }).populate('proposal', 'projectTitle submitterType');
+      }).populate('manuscript', 'title');
 
       // Get in-progress reviews
       const inProgressReviews = await Review.find({
         reviewer: userId,
         status: ReviewStatus.IN_PROGRESS,
-      }).populate('proposal', 'projectTitle submitterType');
+      }).populate('manuscript', 'title');
 
       // Get overdue reviews
       const overdueReviews = await Review.find({
         reviewer: userId,
         status: ReviewStatus.OVERDUE,
-      }).populate('proposal', 'projectTitle submitterType');
+      }).populate('manuscript', 'title');
 
       const totalAssigned = await Review.find({
         reviewer: userId,
-        reviewType: { $ne: 'ai' },
-      }).populate('proposal', 'projectTitle submitterType');
+      }).populate('manuscript', 'title');
 
       logger.info(`Reviewer ${userId} viewed their dashboard`);
 
@@ -631,9 +564,7 @@ class ReviewerController {
           reviewer: {
             name: reviewer.name,
             email: reviewer.email,
-            department: reviewer.department,
             faculty: reviewer.faculty,
-            academicTitle: reviewer.academicTitle,
           },
           statistics: {
             completed: completedReviews.length,
@@ -641,7 +572,7 @@ class ReviewerController {
             overdue: overdueReviews.length,
             totalAssigned: totalAssigned.length,
           },
-          assignedProposals,
+          assignedJournals,
           completedReviews,
           inProgressReviews,
           overdueReviews,

@@ -4,7 +4,7 @@ import {
   authenticateAdminToken,
   rateLimiter,
 } from '../middleware/auth.middleware';
-//import researcherManagementRoutes from '../researchers/routes/researcher-management.routes';
+import authorManagementRoutes from '../researchers/routes/author-management.routes';
 import assignReviewRoutes from '../Review_System/routes/assignReview.routes';
 import reassignReviewRoutes from '../Review_System/routes/reAssignReviewers.routes';
 import manuscriptReviewsRoutes from '../Review_System/routes/manuscriptReviews.routes';
@@ -57,7 +57,7 @@ router.post(
   adminController.assignFaculty
 );
 
-//router.use('/researcher', researcherManagementRoutes);
+router.use('/author-management', authorManagementRoutes);
 router.use('/assign-review', assignReviewRoutes);
 router.use('/reassign-review', reassignReviewRoutes);
 router.use('/manuscript-reviews', manuscriptReviewsRoutes);
