@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import authorRoutes from './author.routes';
-import fullProposalRoutes from './submitFullProposal.routes';
+import reviseManuscriptRoutes from './reviseManuscript.routes';
 
 const router = Router();
 
 router.use('/author', authorRoutes);
-router.use('/', fullProposalRoutes);
+router.use('/', reviseManuscriptRoutes);
 
 export default router;

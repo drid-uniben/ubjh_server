@@ -134,6 +134,7 @@ class ReviewerController {
       // Send login credentials to the reviewer
       await emailService.sendReviewerCredentialsEmail(
         reviewer.email,
+        reviewer.name,
         generatedPassword
       );
       logger.info(`Login credentials sent to reviewer: ${reviewer.email}`);
@@ -190,7 +191,7 @@ class ReviewerController {
       logger.info(`Reviewer profile manually created for: ${email}`);
 
       // Send login credentials to the reviewer
-      await emailService.sendReviewerCredentialsEmail(email, generatedPassword);
+      await emailService.sendReviewerCredentialsEmail(email, name, generatedPassword);
       logger.info(`Login credentials sent to reviewer: ${email}`);
 
       res.status(201).json({

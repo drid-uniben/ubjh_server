@@ -156,7 +156,7 @@ class AuthorController {
       logger.info(`Created author invitation record for email: ${email}`);
 
       // Send invitation email
-      await emailService.sendReviewerInvitationEmail(email, inviteToken); //TODO: change to sendAuthorInvitationEmail
+      await emailService.sendAuthorInvitationEmail(email, inviteToken);
       logger.info(`Author invitation email sent to: ${email}`);
 
       res.status(200).json({
@@ -211,7 +211,7 @@ class AuthorController {
       logger.info(`Author profile completed for: ${author.email}`);
 
       // Send login credentials to the author
-      await emailService.sendReviewerCredentialsEmail(author.email, generatedPassword); //TODO: change to sendAuthorCredentialsEmail
+      await emailService.sendAuthorCredentialsEmail(author.email, author.name, generatedPassword);
       logger.info(`Login credentials sent to author: ${author.email}`);
 
       res.status(200).json({
@@ -265,7 +265,7 @@ class AuthorController {
       logger.info(`Author profile manually created for: ${email}`);
 
       // Send login credentials to the author
-      await emailService.sendReviewerCredentialsEmail(email, generatedPassword); //TODO: change to sendAuthorCredentialsEmail
+      await emailService.sendAuthorCredentialsEmail(email, name, generatedPassword);
       logger.info(`Login credentials sent to author: ${email}`);
 
       res.status(201).json({
@@ -411,7 +411,7 @@ class AuthorController {
       logger.info(`Author invitation resent for email: ${author.email}`);
 
       // Send invitation email
-      await emailService.sendReviewerInvitationEmail(author.email, inviteToken); //TODO: change to sendAuthorInvitationEmail
+      await emailService.sendAuthorInvitationEmail(author.email, inviteToken);
       logger.info(`Author invitation email resent to: ${author.email}`);
 
       res.status(200).json({

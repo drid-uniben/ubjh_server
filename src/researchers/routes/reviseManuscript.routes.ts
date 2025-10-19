@@ -1,17 +1,14 @@
 import { Router, Request } from 'express';
-import submitController from '../controllers/submitManuscript.controller';
+import reviseController from '../controllers/reviseManuscript.controller';
 import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
-import { rateLimiter } from '../../middleware/auth.middleware';
 import { z } from 'zod';
 import validateRequest from '../../middleware/validateRequest';
-
-const router = Router();
 
 const getUploadsPath = (): string => {
   if (process.env.NODE_ENV === 'production') {
     // Go up to dist/ and then to uploads/documents
-    return path.join(__dirname, '..', '..', 'uploads', 'documents');
+    return path.join(__dirname, '..', '..' ,'uploads', 'documents');
   } else {
     // In development, use the existing path
     return path.join(process.cwd(), 'src', 'uploads', 'documents');
@@ -62,13 +59,9 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for manuscripts
 });
 
-// Middleware for handling the single manuscript file upload
-const manuscriptUpload = upload.single('manuscriptFile');
+const router = Router();
 
-// Apply rate limiting to the submission endpoint
-const submissionRateLimiter = rateLimiter(10, 60 * 60 * 1000); // 10 requests per hour
-
-const submitManuscriptSchema = z.object({
+const reviseManuscriptSchema = z.object({
   body: z.object({
     title: z.string().min(1, 'Title is required'),
     abstract: z.string().min(1, 'Abstract is required'),
@@ -90,13 +83,11 @@ const submitManuscriptSchema = z.object({
   }),
 });
 
-// Route for submitting a new manuscript
 router.post(
-  '/manuscript',
-  submissionRateLimiter,
-  manuscriptUpload,
-  validateRequest(submitManuscriptSchema),
-  submitController.submitManuscript
+  '/:id/revise',
+  upload.single('pdf'),
+  validateRequest(reviseManuscriptSchema),
+  reviseController.reviseManuscript
 );
 
 export default router;

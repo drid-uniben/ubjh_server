@@ -70,8 +70,9 @@ class AuthorManagementController {
       await author.save();
 
       // Send credentials email
-      await emailService.sendCredentialsEmail(
+      await emailService.sendAuthorCredentialsEmail(
         author.email,
+        author.name,
         generatedPassword
       );
 
@@ -147,8 +148,9 @@ class AuthorManagementController {
       await author.save();
 
       // Send credentials email
-      await emailService.sendCredentialsEmail(
+      await emailService.sendAuthorCredentialsEmail(
         author.email,
+        author.name,
         generatedPassword
       );
 

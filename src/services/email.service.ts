@@ -17,6 +17,8 @@ import {
   aiReviewFailureTemplate,
   manuscriptStatusUpdateTemplate,
   proposalArchiveNotificationTemplate,
+  authorInvitationTemplate,
+  authorCredentialsTemplate,
 } from '../templates/emails';
 
 validateEnv();
@@ -183,6 +185,96 @@ class EmailService {
     } catch (error) {
       logger.error(
         'Failed to send overdue review notification:',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+  }
+
+  async sendReviewerInvitationEmail(
+    email: string,
+    token: string
+  ): Promise<void> {
+    const inviteUrl = `${this.frontendUrl}/reviewers/complete-profile?token=${token}`;
+
+    try {
+      await this.transporter.sendMail({
+        from: this.emailFrom,
+        to: email,
+        subject: 'Invitation to Become a Reviewer',
+        html: reviewerInvitationTemplate(inviteUrl),
+      });
+      logger.info(`Reviewer invitation email sent to: ${email}`);
+    } catch (error) {
+      logger.error(
+        'Failed to send reviewer invitation email:',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+  }
+
+  async sendReviewerCredentialsEmail(
+    email: string,
+    name: string,
+    password: string
+  ): Promise<void> {
+    const loginUrl = `${this.frontendUrl}/login`;
+
+    try {
+      await this.transporter.sendMail({
+        from: this.emailFrom,
+        to: email,
+        subject: 'Your UBJH Reviewer Account Credentials',
+        html: reviewerCredentialsTemplate(name, email, password, loginUrl),
+      });
+      logger.info(`Reviewer credentials email sent to: ${email}`);
+    } catch (error) {
+      logger.error(
+        'Failed to send reviewer credentials email:',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+  }
+
+  async sendAuthorInvitationEmail(
+    email: string,
+    token: string
+  ): Promise<void> {
+    const inviteUrl = `${this.frontendUrl}/authors/complete-profile?token=${token}`;
+
+    try {
+      await this.transporter.sendMail({
+        from: this.emailFrom,
+        to: email,
+        subject: 'Invitation to Join as an Author',
+        html: authorInvitationTemplate(inviteUrl),
+      });
+      logger.info(`Author invitation email sent to: ${email}`);
+    } catch (error) {
+      logger.error(
+        'Failed to send author invitation email:',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+    }
+  }
+
+  async sendAuthorCredentialsEmail(
+    email: string,
+    name: string,
+    password: string
+  ): Promise<void> {
+    const loginUrl = `${this.frontendUrl}/login`;
+
+    try {
+      await this.transporter.sendMail({
+        from: this.emailFrom,
+        to: email,
+        subject: 'Your UBJH Author Account Credentials',
+        html: authorCredentialsTemplate(name, email, password, loginUrl),
+      });
+      logger.info(`Author credentials email sent to: ${email}`);
+    } catch (error) {
+      logger.error(
+        'Failed to send author credentials email:',
         error instanceof Error ? error.message : 'Unknown error'
       );
     }

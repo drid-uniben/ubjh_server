@@ -13,6 +13,8 @@ import { credentialsTemplate } from './credentials.template';
 import { aiReviewFailureTemplate } from './aiReviewFailure.template';
 import { manuscriptStatusUpdateTemplate } from './manuscriptStatusUpdate.template';
 import { proposalArchiveNotificationTemplate } from './proposalArchiveNotification.template';
+import { authorInvitationTemplate } from './authorInvitation.template';
+import { authorCredentialsTemplate } from './authorCredentials.template';
 
 // Export all templates
 export {
@@ -30,4 +32,6 @@ export {
   reviewerCredentialsTemplate,
   invitationTemplate,
   credentialsTemplate,
+  authorInvitationTemplate,
+  authorCredentialsTemplate,
 };

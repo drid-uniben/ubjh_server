@@ -2,7 +2,7 @@ import express from 'express';
 import authorController from '../controllers/author.controller';
 import {
   rateLimiter,
-  authenticateResearcherToken,
+  authenticateAuthorToken,
   authenticateAdminToken,
 } from '../../middleware/auth.middleware';
 import validateRequest from '../../middleware/validateRequest';
@@ -39,10 +39,14 @@ const addAuthorSchema = z.object({
   }),
 });
 
+// Apply rate limiting to all admin endpoints
+const adminRateLimiter = rateLimiter(100, 60 * 60 * 1000); // 100 requests per hour
+
 // Admin routes for author management
 router.post(
   '/invite',
   authenticateAdminToken,
+  adminRateLimiter,
   validateRequest(inviteAuthorSchema),
   authorController.inviteAuthor
 );
@@ -50,6 +54,7 @@ router.post(
 router.post(
   '/add',
   authenticateAdminToken,
+  adminRateLimiter,
   validateRequest(addAuthorSchema),
   authorController.addAuthorProfile
 );
@@ -57,14 +62,21 @@ router.post(
 router.get(
   '/invitations',
   authenticateAdminToken,
+  adminRateLimiter,
   authorController.getAuthorInvitations
 );
 
-router.delete('/:id', authenticateAdminToken, authorController.deleteAuthor);
+router.delete(
+  '/:id',
+  authenticateAdminToken,
+  adminRateLimiter,
+  authorController.deleteAuthor
+);
 
 router.post(
   '/:id/resend-invitation',
   authenticateAdminToken,
+  adminRateLimiter,
   authorController.resendAuthorInvitation
 );
 
@@ -75,19 +87,20 @@ router.post(
   authorController.completeAuthorProfile
 );
 
-// Apply rate limiting to all researcher endpoints
-const researcherRateLimiter = rateLimiter(50, 60 * 60 * 1000); // 50 requests per hour
-
-// Protect all routes with researcher authentication
-router.use(authenticateResearcherToken);
-router.use(researcherRateLimiter);
-
 // Dashboard route
-router.get('/dashboard', authorController.getAuthorDashboard);
+const researcherRateLimiter = rateLimiter(50, 60 * 60 * 1000); // 50 requests per hour
+router.get(
+  '/dashboard',
+  authenticateAuthorToken,
+  researcherRateLimiter,
+  authorController.getAuthorDashboard
+);
 
 // Get specific manuscript details
 router.get(
   '/manuscripts/:manuscriptId',
+  authenticateAuthorToken,
+  researcherRateLimiter,
   authorController.getManuscriptDetails
 );
 
