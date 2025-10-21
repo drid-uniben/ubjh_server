@@ -14,7 +14,7 @@ router.use('/admin', adminRoutes);
 router.use('/auth', authRoutes);
 router.use('/', authorRoutes);
 router.use('/reviewer', reviewerRoutes);
-//router.use('/reviewsys', reviewSystemRoutes);
+router.use('/reviewsys', reviewSystemRoutes);
 
 // Root route
 router.get('/', (req, res) => {
