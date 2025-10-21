@@ -27,7 +27,7 @@ const manuscriptIdSchema = z.object({
   params: z.object({
     manuscriptId: z
       .string()
-      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid manuscript ID format'),
+      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid manuscript ID format. Manuscript ID must be a 24-character hexadecimal string.'),
   }),
 });
 
@@ -37,6 +37,13 @@ router.get(
   adminRateLimiter,
   validateRequest(manuscriptReviewsQuerySchema),
   manuscriptReviewsController.getAllManuscriptReviews
+);
+
+router.get(
+  '/statistics',
+  authenticateAdminToken,
+  adminRateLimiter,
+  manuscriptReviewsController.getStatistics
 );
 
 router.get(

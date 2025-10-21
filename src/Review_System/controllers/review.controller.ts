@@ -1,12 +1,10 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import Review, { ReviewStatus, ReviewType } from '../models/review.model';
 import Manuscript from '../../Manuscript_Submission/models/manuscript.model';
 import { NotFoundError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
-import ReconciliationController from './reconciliation.controller';
-
-const reconciliationController = new ReconciliationController();
+import reconciliationController from './reconciliation.controller';
 
 interface IReviewResponse {
   success: boolean;
@@ -69,7 +67,7 @@ class ReviewController {
   );
 
   submitReview = asyncHandler(
-    async (req: Request, res: Response<IReviewResponse>): Promise<void> => {
+    async (req: Request, res: Response<IReviewResponse>, next: NextFunction): Promise<void> => {
       const user = (req as AuthenticatedRequest).user;
       const { id } = req.params;
       const reviewerId = user.id;
@@ -104,7 +102,7 @@ class ReviewController {
 
       if (humanReviews.length === 2) {
         req.params.manuscriptId = review.manuscript.toString();
-        await reconciliationController.handleDiscrepancy(req, res);
+        await reconciliationController.handleDiscrepancy(req, res, next);
       } else {
         res.status(200).json({
           success: true,

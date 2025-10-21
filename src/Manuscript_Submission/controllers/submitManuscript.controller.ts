@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import User, { UserRole } from '../../model/user.model';
 import Manuscript, { ManuscriptStatus } from '../models/manuscript.model';
-import { NotFoundError } from '../../utils/customErrors';
 import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
 import emailService from '../../services/email.service';

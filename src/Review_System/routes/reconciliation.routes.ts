@@ -1,11 +1,10 @@
 import { Router } from 'express';
-import ReconciliationController from '../controllers/reconciliation.controller';
+import reconciliationController from '../controllers/reconciliation.controller';
 import { authenticateAdminToken } from '../../middleware/auth.middleware';
 import validateRequest from '../../middleware/validateRequest';
 import { z } from 'zod';
 
 const router = Router();
-const reconciliationController = new ReconciliationController();
 
 const manuscriptIdSchema = z.object({
   params: z.object({

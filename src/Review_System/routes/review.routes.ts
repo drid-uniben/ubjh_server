@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { ReviewDecision } from '../../Manuscript_Submission/models/manuscript.model';
 
 const router = Router();
-const reviewCtrl = new reviewController();
+
 
 const reviewIdSchema = z.object({
   params: z.object({
@@ -57,34 +57,34 @@ const saveProgressSchema = z.object({
 router.get(
   '/assignments',
   authenticateReviewerToken,
-  reviewCtrl.getReviewerAssignments
+  reviewController.getReviewerAssignments
 );
 
 router.get(
   '/statistics',
   authenticateReviewerToken,
-  reviewCtrl.getReviewerStatistics
+  reviewController.getReviewerStatistics
 );
 
 router.get(
   '/:id',
   authenticateReviewerToken,
   validateRequest(reviewIdSchema),
-  reviewCtrl.getReviewById
+  reviewController.getReviewById
 );
 
 router.post(
   '/:id/submit',
   authenticateReviewerToken,
   validateRequest(submitReviewSchema),
-  reviewCtrl.submitReview
+  reviewController.submitReview
 );
 
 router.patch(
   '/:id/save-progress',
   authenticateReviewerToken,
   validateRequest(saveProgressSchema),
-  reviewCtrl.saveReviewProgress
+  reviewController.saveReviewProgress
 );
 
 export default router;

@@ -185,27 +185,83 @@ class AdminController {
       let manuscripts;
 
       if (faculty) {
-        const usersWithFaculty = await User.find({
-          faculty: faculty as string,
-        }).select('_id');
-        const userIds = usersWithFaculty.map((user) => user._id);
+        // Better approach - aggregate with faculty filter
+        const pipeline: PipelineStage[] = [
+          {
+            $lookup: {
+              from: 'Users',
+              localField: 'submitter',
+              foreignField: '_id',
+              as: 'submitterData',
+            },
+          },
+          {
+            $unwind: '$submitterData',
+          },
+          {
+            $match: {
+              ...query,
+              'submitterData.assignedFaculty': faculty, // Match by assignedFaculty
+            },
+          },
+          {
+            $sort: sortObj,
+          },
+          {
+            $skip: (options.page - 1) * options.limit,
+          },
+          {
+            $limit: options.limit,
+          },
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+              status: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              submitter: {
+                _id: '$submitterData._id',
+                name: '$submitterData.name',
+                email: '$submitterData.email',
+                assignedFaculty: '$submitterData.assignedFaculty',
+              },
+            },
+          },
+        ];
 
-        manuscripts = await Manuscript.find({
-          ...query,
-          submitter: { $in: userIds },
-        })
-          .sort(sortObj)
-          .skip((options.page - 1) * options.limit)
-          .limit(options.limit)
-          .populate('submitter', 'name email assignedFaculty');
+        manuscripts = await Manuscript.aggregate(pipeline as PipelineStage[]);
 
-        const totalManuscripts = await Manuscript.countDocuments({
-          ...query,
-          submitter: { $in: userIds },
-        });
+        const countPipeline: PipelineStage[] = [
+          {
+            $lookup: {
+              from: 'Users',
+              localField: 'submitter',
+              foreignField: '_id',
+              as: 'submitterData',
+            },
+          },
+          {
+            $unwind: '$submitterData',
+          },
+          {
+            $match: {
+              ...query,
+              'submitterData.assignedFaculty': faculty,
+            },
+          },
+          {
+            $count: 'total',
+          },
+        ];
+
+        const totalResult = await Manuscript.aggregate(
+          countPipeline as PipelineStage[]
+        );
+        const totalManuscripts = totalResult[0]?.total || 0;
 
         logger.info(
-          `Admin ${user.id} retrieved manuscripts list filtered by faculty`
+          `Admin ${user.id} retrieved manuscripts list filtered by faculty: ${faculty}`
         );
 
         res.status(200).json({
@@ -215,6 +271,7 @@ class AdminController {
           currentPage: options.page,
           data: manuscripts,
         });
+        return;
       } else {
         manuscripts = await Manuscript.find(query)
           .sort(sortObj)

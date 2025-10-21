@@ -4,7 +4,7 @@ import {
   authenticateAdminToken,
   rateLimiter,
 } from '../middleware/auth.middleware';
-import authorManagementRoutes from '../researchers/routes/author-management.routes';
+import authorManagementRoutes from '../authors/routes/author-management.routes';
 import assignReviewRoutes from '../Review_System/routes/assignReview.routes';
 import reassignReviewRoutes from '../Review_System/routes/reAssignReviewers.routes';
 import manuscriptReviewsRoutes from '../Review_System/routes/manuscriptReviews.routes';

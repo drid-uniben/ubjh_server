@@ -141,7 +141,18 @@ class ManuscriptReviewsController {
       const matchConditions: any = {};
 
       if (status) {
-        matchConditions.status = status;
+        if (status === 'reviewed') {
+          matchConditions.status = {
+            $in: [
+              'approved',
+              'rejected',
+              'minor_revision',
+              'major_revision',
+            ],
+          };
+        } else {
+          matchConditions.status = status;
+        }
       }
 
       if (discrepancy === 'true') {
@@ -264,6 +275,88 @@ class ManuscriptReviewsController {
       res.status(200).json({
         success: true,
         data: responseData,
+      });
+    }
+  );
+
+  getStatistics = asyncHandler(
+    async (
+      req: Request,
+      res: Response<IManuscriptReviewsResponse>
+    ): Promise<void> => {
+      const user = (req as AuthenticatedRequest).user;
+
+      const manuscriptsWithReviews = await Manuscript.aggregate([
+        {
+          $lookup: {
+            from: 'Reviews',
+            localField: '_id',
+            foreignField: 'manuscript',
+            as: 'reviews',
+          },
+        },
+        {
+          $match: {
+            'reviews.0': { $exists: true },
+          },
+        },
+      ]);
+
+      let totalWithReviews = 0;
+      let underReview = 0;
+      let reviewed = 0;
+      let inReconciliation = 0;
+      let withDiscrepancy = 0;
+      let totalReviews = 0;
+      let completedReviews = 0;
+
+      for (const manuscript of manuscriptsWithReviews) {
+        totalWithReviews++;
+        if (manuscript.status === 'under_review') underReview++;
+        if (
+          [
+            'approved',
+            'rejected',
+            'minor_revision',
+            'major_revision',
+          ].includes(manuscript.status)
+        )
+          reviewed++;
+        if (manuscript.status === 'in_reconciliation') inReconciliation++;
+
+        const humanReviews = manuscript.reviews.filter(
+          (r: any) => r.reviewType === 'human' && r.status === 'completed'
+        );
+
+        if (humanReviews.length >= 2) {
+          if (
+            humanReviews[0].reviewDecision !== humanReviews[1].reviewDecision
+          ) {
+            withDiscrepancy++;
+          }
+        }
+
+        totalReviews += manuscript.reviews.length;
+        completedReviews += manuscript.reviews.filter(
+          (r: any) => r.status === 'completed'
+        ).length;
+      }
+
+      const completionRate =
+        totalReviews > 0 ? (completedReviews / totalReviews) * 100 : 0;
+
+      logger.info(`Admin ${user.id} retrieved manuscript review statistics`);
+
+      res.status(200).json({
+        success: true,
+        data: {
+          totalWithReviews,
+          underReview,
+          reviewed,
+          inReconciliation,
+          withDiscrepancy,
+          completionRate: parseFloat(completionRate.toFixed(2)),
+        },
       });
     }
   );
