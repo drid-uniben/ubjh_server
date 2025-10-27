@@ -183,9 +183,6 @@ class DecisionsController {
           author: manuscript.submitter,
           coAuthors: manuscript.coAuthors,
           manuscriptId: manuscript._id,
-          doi: `10.xxxx/journal.v${new Date().getFullYear()}.${manuscript._id}`,
-          volume: new Date().getFullYear(),
-          issue: 1,
         });
         await newArticle.save();
         logger.info(`New article created from manuscript ${manuscriptId}`);
