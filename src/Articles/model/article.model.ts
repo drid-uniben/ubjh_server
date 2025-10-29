@@ -1,8 +1,17 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
+export enum ArticleType {
+  RESEARCH = 'research_article',
+  REVIEW = 'review_article',
+  CASE_STUDY = 'case_study',
+  BOOK_REVIEW = 'book_review',
+  EDITORIAL = 'editorial',
+  COMMENTARY = 'commentary',
+}
+
 // Viewer tracking interface
 export interface IViewer {
-  identifier: string; // IP address or session ID
+  identifier: string;
   timestamp: Date;
 }
 
@@ -12,20 +21,21 @@ export interface IArticle extends Document {
   title: string;
   abstract: string;
   keywords: string[];
-  pdfFile: string; // URL path to PDF
+  pdfFile: string;
 
   // Authorship
-  author: Types.ObjectId; // Main author (from manuscript submitter)
-  coAuthors: Types.ObjectId[]; // Co-authors
+  author: Types.ObjectId;
+  coAuthors: Types.ObjectId[];
 
   // Provenance
-  manuscriptId: Types.ObjectId; // Link to the original manuscript submission
+  manuscriptId?: Types.ObjectId;
 
   // Publication Details
   publishDate: Date;
-  doi: string;
-  volume: number;
-  issue: number;
+  doi?: string;
+  volume: Types.ObjectId;
+  issue: Types.ObjectId;
+  articleType: ArticleType;
   pages?: {
     start: number;
     end: number;
@@ -36,18 +46,35 @@ export interface IArticle extends Document {
     count: number;
     viewers: IViewer[];
   };
-
+  downloads: {
+    count: number;
+    downloaders: IViewer[];
+  };
   citationCount: number;
 
   // Licensing
   license: string;
   copyrightHolder: string;
+
+  // Publication Status
+  isPublished: boolean;
+  publishedAt?: Date;
+
+  // Zenodo Integration
+  zenodoDepositId?: string;
+  zenodoRecordId?: string;
+
+  // Indexing Status
+  indexingStatus: {
+    googleScholar: boolean;
+    base: boolean;
+    core: boolean;
+    internetArchive: boolean;
+  };
 }
 
-// Article Schema Definition
 const ArticleSchema: Schema<IArticle> = new Schema(
   {
-    // Core Content
     title: {
       type: String,
       required: [true, 'Article title is required'],
@@ -72,7 +99,6 @@ const ArticleSchema: Schema<IArticle> = new Schema(
       required: [true, 'PDF file is required'],
     },
 
-    // Authorship
     author: {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -85,36 +111,38 @@ const ArticleSchema: Schema<IArticle> = new Schema(
       },
     ],
 
-    // Provenance
     manuscriptId: {
       type: Schema.Types.ObjectId,
       ref: 'Manuscript',
-      required: true,
-      unique: true, // Each manuscript can only be published once
+      sparse: true,
     },
 
-    // Publication Details
     publishDate: {
       type: Date,
       default: Date.now,
       required: [true, 'Publish date is required'],
-      // Set when published - can be custom date for archives or current date
     },
     doi: {
       type: String,
-      required: [true, 'DOI is required'],
       trim: true,
+      sparse: true,
       unique: true,
     },
     volume: {
-      type: Number,
+      type: Schema.Types.ObjectId,
+      ref: 'Volume',
       required: [true, 'Volume is required'],
-      min: [1, 'Volume must be at least 1'],
     },
     issue: {
-      type: Number,
+      type: Schema.Types.ObjectId,
+      ref: 'Issue',
       required: [true, 'Issue is required'],
-      min: [1, 'Issue must be at least 1'],
+    },
+    articleType: {
+      type: String,
+      enum: Object.values(ArticleType),
+      required: [true, 'Article type is required'],
+      default: ArticleType.RESEARCH,
     },
     pages: {
       start: {
@@ -133,7 +161,6 @@ const ArticleSchema: Schema<IArticle> = new Schema(
       },
     },
 
-    // Metrics & Tracking
     views: {
       count: {
         type: Number,
@@ -152,13 +179,30 @@ const ArticleSchema: Schema<IArticle> = new Schema(
         },
       ],
     },
+    downloads: {
+      count: {
+        type: Number,
+        default: 0,
+      },
+      downloaders: [
+        {
+          identifier: {
+            type: String,
+            required: true,
+          },
+          timestamp: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
+    },
     citationCount: {
       type: Number,
       default: 0,
       min: [0, 'Citation count cannot be negative'],
     },
 
-    // Licensing
     license: {
       type: String,
       default: 'CC BY 4.0',
@@ -167,17 +211,54 @@ const ArticleSchema: Schema<IArticle> = new Schema(
       type: String,
       default: 'The Authors',
     },
+
+    isPublished: {
+      type: Boolean,
+      default: false,
+    },
+    publishedAt: {
+      type: Date,
+    },
+
+    zenodoDepositId: {
+      type: String,
+    },
+    zenodoRecordId: {
+      type: String,
+    },
+
+    indexingStatus: {
+      googleScholar: {
+        type: Boolean,
+        default: false,
+      },
+      base: {
+        type: Boolean,
+        default: false,
+      },
+      core: {
+        type: Boolean,
+        default: false,
+      },
+      internetArchive: {
+        type: Boolean,
+        default: false,
+      },
+    },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt
+    timestamps: true,
   }
 );
 
 // Indexes for performance optimization
-ArticleSchema.index({ title: 'text', abstract: 'text', keywords: 'text' }); // Full-text search
-
-ArticleSchema.index({ publishDate: -1 }); // Sort by publication date
+ArticleSchema.index({ title: 'text', abstract: 'text', keywords: 'text' });
+ArticleSchema.index({ publishDate: -1 });
 ArticleSchema.index({ author: 1 });
 ArticleSchema.index({ coAuthors: 1 });
+ArticleSchema.index({ volume: 1, issue: 1 });
+ArticleSchema.index({ doi: 1 });
+ArticleSchema.index({ isPublished: 1 });
+ArticleSchema.index({ articleType: 1 });
 
 export default mongoose.model<IArticle>('Article', ArticleSchema, 'Articles');

@@ -19,6 +19,8 @@ import {
   proposalArchiveNotificationTemplate,
   authorInvitationTemplate,
   authorCredentialsTemplate,
+  subscriptionConfirmationTemplate,
+  newArticleNotificationTemplate,
 } from '../templates/emails';
 
 validateEnv();
@@ -308,6 +310,56 @@ class EmailService {
         'Failed to send reconciliation assignment email:',
         error instanceof Error ? error.message : 'Unknown error'
       );
+    }
+  }
+
+  async sendSubscriptionConfirmationEmail(
+    email: string,
+    unsubscribeToken: string
+  ): Promise<void> {
+    try {
+      await this.transporter.sendMail({
+        from: this.emailFrom,
+        to: email,
+        subject: 'Welcome to UBJH Email Alerts',
+        html: subscriptionConfirmationTemplate(email, unsubscribeToken),
+      });
+      logger.info(`Subscription confirmation email sent to: ${email}`);
+    } catch (error) {
+      logger.error(
+        'Failed to send subscription confirmation email:',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+      throw error;
+    }
+  }
+
+  async sendNewArticleNotification(
+    email: string,
+    articleTitle: string,
+    authorName: string,
+    articleId: string,
+    unsubscribeToken: string
+  ): Promise<void> {
+    try {
+      await this.transporter.sendMail({
+        from: this.emailFrom,
+        to: email,
+        subject: `New Article Published: ${articleTitle}`,
+        html: newArticleNotificationTemplate(
+          articleTitle,
+          authorName,
+          articleId,
+          unsubscribeToken
+        ),
+      });
+      logger.info(`New article notification sent to: ${email}`);
+    } catch (error) {
+      logger.error(
+        'Failed to send new article notification:',
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+      throw error;
     }
   }
 }

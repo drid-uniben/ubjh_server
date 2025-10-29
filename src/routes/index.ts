@@ -5,6 +5,7 @@ import authRoutes from './auth.routes';
 import authorRoutes from '../authors/routes/index';
 import reviewerRoutes from '../Reviewers/routes/reviewer.routes';
 import reviewSystemRoutes from '../Review_System/routes/review.routes';
+// import publicationRoutes from '../Publication/routes/publication.routes';
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.use('/auth', authRoutes);
 router.use('/', authorRoutes);
 router.use('/reviewer', reviewerRoutes);
 router.use('/reviewsys', reviewSystemRoutes);
+// router.use('/publication', publicationRoutes);
 
 // Root route
 router.get('/', (req, res) => {

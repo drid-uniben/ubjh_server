@@ -11,7 +11,7 @@ async function startWorker() {
     throw new Error('MONGODB_URI not set in environment.');
   }
 
-  // Connect Mongoose (for Proposal and Review models)
+  // Connect Mongoose (for Article and Publication models)
   await mongoose.connect(mongoUri);
   logger.info('Mongoose connected in worker.');
 
@@ -20,7 +20,7 @@ async function startWorker() {
   logger.info('Agenda worker started and listening for jobs...');
 }
 
-startWorker().catch(err => {
+startWorker().catch((err) => {
   logger.error('Error starting Agenda worker:', err);
   process.exit(1);
 });

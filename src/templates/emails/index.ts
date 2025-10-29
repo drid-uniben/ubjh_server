@@ -15,6 +15,8 @@ import { manuscriptStatusUpdateTemplate } from './manuscriptStatusUpdate.templat
 import { proposalArchiveNotificationTemplate } from './proposalArchiveNotification.template';
 import { authorInvitationTemplate } from './authorInvitation.template';
 import { authorCredentialsTemplate } from './authorCredentials.template';
+import { subscriptionConfirmationTemplate } from './subscriptionConfirmation.template';
+import { newArticleNotificationTemplate } from './newArticleNotification.template';
 
 // Export all templates
 export {
@@ -34,4 +36,6 @@ export {
   credentialsTemplate,
   authorInvitationTemplate,
   authorCredentialsTemplate,
+  subscriptionConfirmationTemplate,
+  newArticleNotificationTemplate,
 };
