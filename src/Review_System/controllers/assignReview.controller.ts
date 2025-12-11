@@ -236,6 +236,8 @@ class AssignReviewController {
             id: selectedReviewer._id,
             name: selectedReviewer.name,
             email: selectedReviewer.email,
+            phoneNumber: selectedReviewer.phoneNumber,
+            areaOfSpecialization: selectedReviewer.areaOfSpecialization,
           },
           dueDate,
         },
@@ -283,14 +285,14 @@ class AssignReviewController {
       isActive: true,
       assignedFaculty: { $in: eligibleFaculties },
       _id: { $nin: existingReviewerIds },
-    });
+    }).select('name email faculty phoneNumber areaOfSpecialization');
 
     // Admins can also be manually assigned
     const adminReviewers = await User.find({
       role: UserRole.ADMIN,
       isActive: true,
       _id: { $nin: existingReviewerIds },
-    });
+    }).select('name email faculty phoneNumber areaOfSpecialization');
 
     return [...eligibleReviewers, ...adminReviewers];
   }

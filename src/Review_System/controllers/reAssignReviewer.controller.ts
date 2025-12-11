@@ -192,7 +192,7 @@ class ReassignReviewController {
     }
     const reviews = await Review.find({ manuscript: manuscriptId }).populate(
       'reviewer',
-      'name email role'
+      'name email role phoneNumber areaOfSpecialization'
     );
     res.status(200).json({
       success: true,
@@ -243,6 +243,8 @@ class ReassignReviewController {
             _id: (admin._id as mongoose.Types.ObjectId).toString(),
             name: admin.name,
             email: admin.email,
+            phoneNumber: admin.phoneNumber,
+            areaOfSpecialization: admin.areaOfSpecialization,
             totalReviewsCount: reviewCount,
             completionRate:
               reviewCount > 0 ? (completedCount / reviewCount) * 100 : 0,
@@ -268,6 +270,8 @@ class ReassignReviewController {
               name: reviewer.name,
               email: reviewer.email,
               facultyTitle: reviewer.faculty,
+              phoneNumber: reviewer.phoneNumber,
+              areaOfSpecialization: reviewer.areaOfSpecialization,
               totalReviewsCount: reviewCount,
               completionRate:
                 reviewCount > 0 ? (completedCount / reviewCount) * 100 : 0,
