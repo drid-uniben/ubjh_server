@@ -16,6 +16,8 @@ interface EligibleReviewer {
   totalReviewsCount: number;
   completionRate: number;
   facultyTitle?: string;
+  phoneNumber?: string;
+  areaOfSpecialization?: string;
 }
 
 interface IReassignReviewResponse {
