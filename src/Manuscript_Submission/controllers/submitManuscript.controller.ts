@@ -149,7 +149,8 @@ class SubmitController {
       await newManuscript.save();
 
       // Send confirmation email to the submitter
-      try {
+      {
+        /* try {
         await emailService.sendSubmissionConfirmationEmail(
           submitter.email,
           submitter.name,
@@ -160,6 +161,7 @@ class SubmitController {
           'Failed to send submission confirmation email:',
           error instanceof Error ? error.message : 'Unknown error'
         );
+      } */
       }
 
       logger.info(`New manuscript submitted by: ${submitter.email}`);
