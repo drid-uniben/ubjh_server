@@ -23,6 +23,12 @@ interface RecipientData {
   role: string;
 }
 
+interface EmailAttachment {
+  filename: string;
+  path: string;
+  contentType: string;
+}
+
 class DynamicEmailController {
   // Get recipients with filtering
   getRecipients = asyncHandler(
@@ -103,6 +109,7 @@ class DynamicEmailController {
   previewEmail = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const { recipientIds, subject, headerTitle, bodyContent } = req.body;
+      const attachments = req.files as Express.Multer.File[] | undefined;
 
       if (!recipientIds || recipientIds.length === 0) {
         throw new BadRequestError(
@@ -127,7 +134,6 @@ class DynamicEmailController {
         .sort({ createdAt: -1 })
         .lean();
 
-      // Replace variables
       const previewData = {
         name: user.name,
         email: user.email,
@@ -136,8 +142,17 @@ class DynamicEmailController {
         manuscriptId: manuscript?._id.toString() || 'N/A',
         manuscriptStatus: manuscript?.status || 'N/A',
       };
+
       const processedContent = this.replaceVariables(bodyContent, previewData);
       const fullHtml = this.generateEmailHtml(headerTitle, processedContent);
+
+      // Include attachment info in preview
+      const attachmentInfo =
+        attachments?.map((file) => ({
+          filename: file.originalname,
+          size: file.size,
+          type: file.mimetype,
+        })) || [];
 
       res.status(200).json({
         success: true,
@@ -147,6 +162,7 @@ class DynamicEmailController {
             name: user.name,
             email: user.email,
           },
+          attachments: attachmentInfo,
         },
       });
     }
@@ -157,6 +173,7 @@ class DynamicEmailController {
     async (req: Request, res: Response): Promise<void> => {
       const adminUser = (req as AdminAuthenticatedRequest).user;
       const { recipientIds, subject, headerTitle, bodyContent } = req.body;
+      const attachments = req.files as Express.Multer.File[] | undefined;
 
       if (!recipientIds || recipientIds.length === 0) {
         throw new BadRequestError('At least one recipient is required');
@@ -165,6 +182,14 @@ class DynamicEmailController {
       if (!subject || !bodyContent) {
         throw new BadRequestError('Subject and body content are required');
       }
+
+      // Prepare attachment data for nodemailer
+      const emailAttachments: EmailAttachment[] =
+        attachments?.map((file) => ({
+          filename: file.originalname,
+          path: file.path,
+          contentType: file.mimetype,
+        })) || [];
 
       // Get all recipients
       const users = await User.find({
@@ -207,7 +232,12 @@ class DynamicEmailController {
             processedContent
           );
 
-          await emailService.sendDynamicEmail(user.email, subject, fullHtml);
+          await emailService.sendDynamicEmail(
+            user.email,
+            subject,
+            fullHtml,
+            emailAttachments
+          );
           results.sent++;
         } catch (error) {
           results.failed++;
@@ -221,8 +251,23 @@ class DynamicEmailController {
         }
       }
 
+      // Clean up uploaded files after sending
+      if (attachments) {
+        const fs = await import('fs/promises');
+        for (const file of attachments) {
+          try {
+            await fs.unlink(file.path);
+          } catch (error) {
+            logger.error(
+              `Failed to delete attachment file: ${file.path}`,
+              error
+            );
+          }
+        }
+      }
+
       logger.info(
-        `Admin ${adminUser.id} sent email campaign to ${results.sent} recipients (${results.failed} failed)`
+        `Admin ${adminUser.id} sent email campaign to ${results.sent} recipients (${results.failed} failed)${emailAttachments.length > 0 ? ` with ${emailAttachments.length} attachment(s)` : ''}`
       );
 
       res.status(200).json({

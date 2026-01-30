@@ -77,6 +77,60 @@ const upload = multer({
 // Middleware for handling the single manuscript file upload
 const manuscriptUpload = upload.single('file');
 
+// Add multer configuration for email attachments
+const emailAttachmentStorage = multer.diskStorage({
+  destination: function (_req, _file, cb) {
+    const uploadPath = path.join(
+      process.cwd(),
+      'src',
+      'uploads',
+      'email-attachments'
+    );
+    cb(null, uploadPath);
+  },
+  filename: function (_req, file, cb) {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const extension = path.extname(file.originalname);
+    cb(null, `attachment-${uniqueSuffix}${extension}`);
+  },
+});
+
+const emailAttachmentFilter = (
+  _req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
+  // Allow images, PDFs, and DOCX
+  const allowedMimes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+
+  if (allowedMimes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error(
+        'Invalid file type. Only images, PDFs, and DOCX files are allowed.'
+      )
+    );
+  }
+};
+
+const emailAttachmentUpload = multer({
+  storage: emailAttachmentStorage,
+  fileFilter: emailAttachmentFilter,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit per file
+    files: 5, // Maximum 5 files
+  },
+});
+
 const adminRateLimiter = rateLimiter(2000, 60 * 60 * 1000);
 
 router.get(
@@ -162,6 +216,7 @@ router.post(
   '/campaign/preview',
   authenticateAdminToken,
   adminRateLimiter,
+  emailAttachmentUpload.array('attachments', 5),
   dynamicEmailController.previewEmail
 );
 
@@ -169,6 +224,7 @@ router.post(
   '/campaign/send',
   authenticateAdminToken,
   adminRateLimiter,
+  emailAttachmentUpload.array('attachments', 5),
   dynamicEmailController.sendCampaign
 );
 
