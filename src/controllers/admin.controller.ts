@@ -719,9 +719,7 @@ class AdminController {
             submitter.name,
             manuscript.title,
             manuscript.isArchived,
-            manuscript.isArchived
-              ? manuscript.archiveReason
-              : manuscript.unarchiveReason
+            manuscript.isArchived ? manuscript.archiveReason : manuscript.unarchiveReason
           );
         } catch (error) {
           logger.error(
@@ -732,9 +730,7 @@ class AdminController {
         }
       }
 
-      const message = wasArchived
-        ? 'Manuscript has been un-archived.'
-        : 'Manuscript has been archived.';
+      const message = wasArchived ? 'Manuscript has been un-archived.' : 'Manuscript has been archived.';
 
       logger.info(`Admin ${user.id} ${message.toLowerCase()} manuscript ${id}`);
 

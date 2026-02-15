@@ -75,9 +75,7 @@ class EmailService {
     manuscriptTitle: string,
     isRevision = false
   ): Promise<void> {
-    const subject = isRevision
-      ? 'Confirmation of Manuscript Revision'
-      : 'Confirmation of Manuscript Submission';
+    const subject = isRevision ? 'Confirmation of Manuscript Revision' : 'Confirmation of Manuscript Submission';
     const loginUrl = `${this.frontendUrl}/author/login`;
 
     try {
@@ -365,9 +363,7 @@ class EmailService {
     isArchived: boolean,
     reason?: string
   ): Promise<void> {
-    const subject = isArchived
-      ? `Your Manuscript "${manuscriptTitle}" Has Been Archived`
-      : `Your Manuscript "${manuscriptTitle}" Has Been Unarchived`;
+    const subject = isArchived ? `Your Manuscript "${manuscriptTitle}" Has Been Archived` : `Your Manuscript "${manuscriptTitle}" Has Been Unarchived`;
 
     try {
       await this.transporter.sendMail({

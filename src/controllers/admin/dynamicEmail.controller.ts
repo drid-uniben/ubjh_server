@@ -108,7 +108,7 @@ class DynamicEmailController {
   // Preview email with dynamic variables
   previewEmail = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      let { recipientIds, subject, headerTitle, bodyContent } = req.body;
+      const { recipientIds, subject, headerTitle, bodyContent } = req.body;
       const attachments = req.files as Express.Multer.File[] | undefined;
 
       // Robustly handle recipientIds (could be string or array from FormData)
@@ -190,7 +190,7 @@ class DynamicEmailController {
   sendCampaign = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
       const adminUser = (req as AdminAuthenticatedRequest).user;
-      let { recipientIds, subject, headerTitle, bodyContent } = req.body;
+      const { recipientIds, subject, headerTitle, bodyContent } = req.body;
       const attachments = req.files as Express.Multer.File[] | undefined;
 
       // Robustly handle recipientIds (could be string or array from FormData)

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Request, Response } from 'express';
 import Article, { ArticleType } from '../../Articles/model/article.model';
 import Volume from '../models/volume.model';
@@ -62,10 +63,13 @@ class PublicationController {
         articleType,
         pages,
         publishDate,
-        customDOI, // Optional: for migrating old articles with existing DOIs
+        customDOI,
+        // NEW: Publication options
+        doiEnabled = false,
+        internetArchiveEnabled = false,
+        emailNotificationEnabled = false,
       } = req.body;
 
-      // Find the article
       const article = await Article.findById(articleId)
         .populate('author', 'name email affiliation orcid')
         .populate('coAuthors', 'name email affiliation orcid');
@@ -78,7 +82,6 @@ class PublicationController {
         throw new BadRequestError('Article is already published');
       }
 
-      // Verify volume and issue exist
       const volume = await Volume.findById(volumeId);
       if (!volume) {
         throw new NotFoundError('Volume not found');
@@ -89,7 +92,6 @@ class PublicationController {
         throw new NotFoundError('Issue not found');
       }
 
-      // Verify issue belongs to volume
       if (issue.volume.toString() !== volumeId) {
         throw new BadRequestError(
           'Issue does not belong to the selected volume'
@@ -109,35 +111,62 @@ class PublicationController {
       article.isPublished = true;
       article.publishedAt = new Date();
 
-      // If custom DOI provided (for old articles), use it
+      // Store publication options
+      article.publicationOptions = {
+        doiEnabled,
+        internetArchiveEnabled,
+        emailNotificationEnabled,
+      };
+
+      // Handle custom DOI
       if (customDOI) {
         article.doi = customDOI;
       }
 
       await article.save();
 
-      // Get PDF file path
       const pdfPath = article.pdfFile.replace(
         process.env.API_URL || 'http://localhost:3000',
         ''
       );
       const fullPdfPath = path.join(process.cwd(), 'src', pdfPath);
 
-      // Schedule background jobs for DOI registration and indexing
-      // Only if no custom DOI (for new publications)
+      // Schedule background jobs based on options
       if (!customDOI) {
-        await agenda.now('publish-article', {
+        // Always generate metadata (Google Scholar, BASE, CORE, SEO)
+        await agenda.now('generate-indexing-metadata', {
           articleId: (article._id as mongoose.Types.ObjectId).toString(),
-          pdfPath: fullPdfPath,
         });
+
+        // Conditionally schedule DOI registration
+        if (doiEnabled) {
+          await agenda.now('register-doi', {
+            articleId: (article._id as mongoose.Types.ObjectId).toString(),
+            pdfPath: fullPdfPath,
+          });
+        }
+
+        // Conditionally schedule Internet Archive upload
+        if (internetArchiveEnabled) {
+          await agenda.now('upload-to-archive', {
+            articleId: (article._id as mongoose.Types.ObjectId).toString(),
+            pdfPath: fullPdfPath,
+          });
+        }
+
+        // Conditionally schedule email notifications
+        if (emailNotificationEnabled) {
+          await agenda.now('send-publication-notification', {
+            articleId: (article._id as mongoose.Types.ObjectId).toString(),
+          });
+        }
       }
 
       logger.info(`Admin ${user.id} published article ${articleId}`);
 
       res.status(200).json({
         success: true,
-        message:
-          'Article published successfully. DOI registration and indexing jobs queued.',
+        message: 'Article published successfully',
         data: article,
       });
     }
@@ -159,9 +188,12 @@ class PublicationController {
         pages,
         publishDate,
         customDOI,
+        // NEW: Publication options
+        doiEnabled = false,
+        internetArchiveEnabled = false,
+        emailNotificationEnabled = false,
       } = req.body;
 
-      // Validate required fields
       if (!title || !abstract || !volumeId || !issueId || !authorId) {
         throw new BadRequestError('Missing required fields');
       }
@@ -170,7 +202,6 @@ class PublicationController {
         throw new BadRequestError('PDF file is required');
       }
 
-      // Verify volume and issue
       const volume = await Volume.findById(volumeId);
       if (!volume) {
         throw new NotFoundError('Volume not found');
@@ -187,27 +218,29 @@ class PublicationController {
         );
       }
 
-      // Verify author
       const author = await User.findById(authorId);
       if (!author) {
         throw new NotFoundError('Author not found');
       }
 
-      // Verify co-authors if provided
       let validCoAuthors: IUser[] = [];
-      if (coAuthorIds && coAuthorIds.length > 0) {
-        validCoAuthors = await User.find({
-          _id: { $in: coAuthorIds },
-        });
+      if (coAuthorIds && Array.isArray(coAuthorIds) && coAuthorIds.length > 0) {
+        // Filter out empty strings and ensure all are valid strings
+        const validIds = coAuthorIds.filter((id) => id && typeof id === 'string' && id.trim());
+        
+        if (validIds.length > 0) {
+          validCoAuthors = await User.find({
+            _id: { $in: validIds },
+          });
 
-        if (validCoAuthors.length !== coAuthorIds.length) {
-          throw new BadRequestError('One or more co-authors not found');
+          if (validCoAuthors.length !== validIds.length) {
+            throw new BadRequestError('One or more co-authors not found');
+          }
         }
       }
 
-      const pdfFile = `${process.env.API_URL || 'http://localhost:3000'}/uploads/documents/${req.file.filename}`;
+      const pdfFile = `${process.env.API_URL || 'http://localhost:3000'}/uploads/manual_articles/${req.file.filename}`;
 
-      // Create article
       const article = new Article({
         title,
         abstract,
@@ -222,28 +255,50 @@ class PublicationController {
         publishDate: publishDate ? new Date(publishDate) : new Date(),
         isPublished: true,
         publishedAt: new Date(),
+        publicationOptions: {
+          doiEnabled,
+          internetArchiveEnabled,
+          emailNotificationEnabled,
+        },
       });
 
-      // If custom DOI provided (for old articles), use it
       if (customDOI) {
         article.doi = customDOI;
       }
 
       await article.save();
 
-      // Get PDF file path for background jobs
       const pdfPath = article.pdfFile.replace(
         process.env.API_URL || 'http://localhost:3000',
         ''
       );
       const fullPdfPath = path.join(process.cwd(), 'src', pdfPath);
 
-      // Schedule background jobs (only if no custom DOI)
+      // Schedule jobs based on options (same logic as publishArticle)
       if (!customDOI) {
-        await agenda.now('publish-article', {
+        await agenda.now('generate-indexing-metadata', {
           articleId: (article._id as mongoose.Types.ObjectId).toString(),
-          pdfPath: fullPdfPath,
         });
+
+        if (doiEnabled) {
+          await agenda.now('register-doi', {
+            articleId: (article._id as mongoose.Types.ObjectId).toString(),
+            pdfPath: fullPdfPath,
+          });
+        }
+
+        if (internetArchiveEnabled) {
+          await agenda.now('upload-to-archive', {
+            articleId: (article._id as mongoose.Types.ObjectId).toString(),
+            pdfPath: fullPdfPath,
+          });
+        }
+
+        if (emailNotificationEnabled) {
+          await agenda.now('send-publication-notification', {
+            articleId: (article._id as mongoose.Types.ObjectId).toString(),
+          });
+        }
       }
 
       logger.info(
@@ -252,8 +307,7 @@ class PublicationController {
 
       res.status(201).json({
         success: true,
-        message:
-          'Article created and published successfully. DOI registration and indexing jobs queued.',
+        message: 'Article created and published successfully',
         data: article,
       });
     }
@@ -409,6 +463,53 @@ class PublicationController {
       res.status(200).json({
         success: true,
         data: archiveData,
+      });
+    }
+  );
+  // Add search method to PublicationController class
+  searchArticles = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { query, limit = 10 } = req.query;
+
+      if (!query || typeof query !== 'string' || query.trim().length < 2) {
+        res.status(400).json({
+          success: false,
+          message: 'Search query must be at least 2 characters',
+          data: [],
+        });
+        return;
+      }
+
+      const searchRegex = new RegExp(query.trim(), 'i');
+
+      const articles = await Article.find({
+        isPublished: true,
+        $or: [
+          { title: searchRegex },
+          { abstract: searchRegex },
+          { keywords: searchRegex },
+          { doi: searchRegex },
+        ],
+      })
+        .populate('author', 'name email affiliation')
+        .populate('coAuthors', 'name email affiliation')
+        .populate('volume', 'volumeNumber year')
+        .populate('issue', 'issueNumber')
+        .limit(parseInt(limit as string, 10))
+        .select(
+          '_id title abstract doi volume issue author coAuthors articleType publishDate'
+        )
+        .sort({ publishDate: -1 })
+        .lean();
+
+      logger.info(
+        `Article search performed: "${query}" - ${articles.length} results`
+      );
+
+      res.status(200).json({
+        success: true,
+        count: articles.length,
+        data: articles,
       });
     }
   );

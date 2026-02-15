@@ -114,7 +114,7 @@ class AssignReviewController {
         const eligibleFaculties = getEligibleFaculties(submitterFaculty);
         if (eligibleFaculties.length === 0) {
           throw new BadRequestError(
-            "Cannot assign reviewers: No eligible faculties found for the manuscript's cluster"
+            'Cannot assign reviewers: No eligible faculties found for the manuscript\'s cluster'
           );
         }
 

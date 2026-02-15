@@ -324,8 +324,7 @@ class ManuscriptReviewsController {
           ['approved', 'rejected', 'minor_revision', 'major_revision'].includes(
             manuscript.status
           )
-        )
-          reviewed++;
+        ) reviewed++;
         if (manuscript.status === 'in_reconciliation') inReconciliation++;
 
         const humanReviews = manuscript.reviews.filter(
@@ -383,12 +382,10 @@ class ManuscriptReviewsController {
       dueDate: review.dueDate,
       completedAt: review.completedAt,
       createdAt: review.createdAt,
-      reviewer: review.reviewer
-        ? {
-            name: review.reviewer.name,
-            email: review.reviewer.email,
-          }
-        : null,
+      reviewer: review.reviewer ? {
+        name: review.reviewer.name,
+        email: review.reviewer.email,
+      } : null,
     };
   };
 }
