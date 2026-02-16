@@ -9,7 +9,7 @@ import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
 import agenda from '../../config/agenda';
 import path from 'path';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 interface AdminAuthenticatedRequest extends Request {
   user: {
@@ -469,7 +469,15 @@ class PublicationController {
   // Add search method to PublicationController class
   searchArticles = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      const { query, limit = 10 } = req.query;
+      const {
+        query,
+        limit = 10,
+        volumeId,
+        issueId,
+        volumeNumber,
+        issueNumber,
+        articleType,
+      } = req.query;
 
       if (!query || typeof query !== 'string' || query.trim().length < 2) {
         res.status(400).json({
@@ -482,15 +490,66 @@ class PublicationController {
 
       const searchRegex = new RegExp(query.trim(), 'i');
 
-      const articles = await Article.find({
+      // 1. Find matching authors/co-authors IDs if query matches their name
+      const matchingUsers = await User.find({
+        name: searchRegex,
+      }).select('_id');
+      const matchingUserIds = matchingUsers.map((u) => u._id);
+
+      // 2. Build the article query
+      const articleQuery: any = {
         isPublished: true,
         $or: [
           { title: searchRegex },
           { abstract: searchRegex },
           { keywords: searchRegex },
           { doi: searchRegex },
+          { author: { $in: matchingUserIds } },
+          { coAuthors: { $in: matchingUserIds } },
         ],
-      })
+      };
+
+      // 3. Handle optional ID filters
+      if (volumeId && typeof volumeId === 'string' && Types.ObjectId.isValid(volumeId)) {
+        articleQuery.volume = new Types.ObjectId(volumeId);
+      }
+      if (issueId && typeof issueId === 'string' && Types.ObjectId.isValid(issueId)) {
+        articleQuery.issue = new Types.ObjectId(issueId);
+      }
+
+      // 4. Handle Volume/Issue Number filters (if ID filters are not provided)
+      if (!articleQuery.volume && volumeNumber) {
+        const volume = await Volume.findOne({ volumeNumber: parseInt(volumeNumber as string, 10) });
+        if (volume) {
+          articleQuery.volume = volume._id;
+        } else {
+          // If volume number specified but not found, return empty results early
+          res.status(200).json({ success: true, count: 0, data: [] });
+          return;
+        }
+      }
+
+      if (!articleQuery.issue && issueNumber) {
+        const issueQuery: any = { issueNumber: parseInt(issueNumber as string, 10) };
+        if (articleQuery.volume) {
+          issueQuery.volume = articleQuery.volume;
+        }
+        
+        const issue = await Issue.findOne(issueQuery);
+        if (issue) {
+          articleQuery.issue = issue._id;
+        } else {
+          // If issue number specified but not found, return empty results early
+          res.status(200).json({ success: true, count: 0, data: [] });
+          return;
+        }
+      }
+
+      if (articleType && typeof articleType === 'string') {
+        articleQuery.articleType = articleType;
+      }
+
+      const articles = await Article.find(articleQuery)
         .populate('author', 'name email affiliation')
         .populate('coAuthors', 'name email affiliation')
         .populate('volume', 'volumeNumber year')
@@ -503,7 +562,7 @@ class PublicationController {
         .lean();
 
       logger.info(
-        `Article search performed: "${query}" - ${articles.length} results`
+        `Article search performed: "${query}" - ${articles.length} results (Filters: ${JSON.stringify({ volumeId, issueId, volumeNumber, issueNumber, articleType })})`
       );
 
       res.status(200).json({

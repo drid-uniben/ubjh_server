@@ -257,6 +257,12 @@ router.get(
 
 // Published Articles
 router.get(
+  '/articles/search',
+  publicRateLimiter,
+  publicationController.searchArticles
+);
+
+router.get(
   '/articles',
   publicRateLimiter,
   publicationController.getPublishedArticles
@@ -332,11 +338,5 @@ router.get(
 );
 
 router.use('/article-analytics', articleAnalyticsRoutes);
-
-router.get(
-  '/articles/search',
-  publicRateLimiter,
-  publicationController.searchArticles
-);
 
 export default router;
