@@ -9,6 +9,7 @@ import asyncHandler from '../../utils/asyncHandler';
 import logger from '../../utils/logger';
 import agenda from '../../config/agenda';
 import path from 'path';
+import fs from 'fs';
 import mongoose, { Types } from 'mongoose';
 
 interface AdminAuthenticatedRequest extends Request {
@@ -129,7 +130,8 @@ class PublicationController {
         process.env.API_URL || 'http://localhost:3000',
         ''
       );
-      const fullPdfPath = path.join(process.cwd(), 'src', pdfPath);
+      const baseDir = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
+      const fullPdfPath = path.join(process.cwd(), baseDir, pdfPath);
 
       // Schedule background jobs based on options
       if (!customDOI) {
@@ -226,8 +228,10 @@ class PublicationController {
       let validCoAuthors: IUser[] = [];
       if (coAuthorIds && Array.isArray(coAuthorIds) && coAuthorIds.length > 0) {
         // Filter out empty strings and ensure all are valid strings
-        const validIds = coAuthorIds.filter((id) => id && typeof id === 'string' && id.trim());
-        
+        const validIds = coAuthorIds.filter(
+          (id) => id && typeof id === 'string' && id.trim()
+        );
+
         if (validIds.length > 0) {
           validCoAuthors = await User.find({
             _id: { $in: validIds },
@@ -272,7 +276,8 @@ class PublicationController {
         process.env.API_URL || 'http://localhost:3000',
         ''
       );
-      const fullPdfPath = path.join(process.cwd(), 'src', pdfPath);
+      const baseDir = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
+      const fullPdfPath = path.join(process.cwd(), baseDir, pdfPath);
 
       // Schedule jobs based on options (same logic as publishArticle)
       if (!customDOI) {
@@ -510,16 +515,26 @@ class PublicationController {
       };
 
       // 3. Handle optional ID filters
-      if (volumeId && typeof volumeId === 'string' && Types.ObjectId.isValid(volumeId)) {
+      if (
+        volumeId &&
+        typeof volumeId === 'string' &&
+        Types.ObjectId.isValid(volumeId)
+      ) {
         articleQuery.volume = new Types.ObjectId(volumeId);
       }
-      if (issueId && typeof issueId === 'string' && Types.ObjectId.isValid(issueId)) {
+      if (
+        issueId &&
+        typeof issueId === 'string' &&
+        Types.ObjectId.isValid(issueId)
+      ) {
         articleQuery.issue = new Types.ObjectId(issueId);
       }
 
       // 4. Handle Volume/Issue Number filters (if ID filters are not provided)
       if (!articleQuery.volume && volumeNumber) {
-        const volume = await Volume.findOne({ volumeNumber: parseInt(volumeNumber as string, 10) });
+        const volume = await Volume.findOne({
+          volumeNumber: parseInt(volumeNumber as string, 10),
+        });
         if (volume) {
           articleQuery.volume = volume._id;
         } else {
@@ -530,11 +545,13 @@ class PublicationController {
       }
 
       if (!articleQuery.issue && issueNumber) {
-        const issueQuery: any = { issueNumber: parseInt(issueNumber as string, 10) };
+        const issueQuery: any = {
+          issueNumber: parseInt(issueNumber as string, 10),
+        };
         if (articleQuery.volume) {
           issueQuery.volume = articleQuery.volume;
         }
-        
+
         const issue = await Issue.findOne(issueQuery);
         if (issue) {
           articleQuery.issue = issue._id;
@@ -572,6 +589,128 @@ class PublicationController {
       });
     }
   );
+
+  // ── Get manually published articles (no manuscriptId) ─────────────
+  getManualArticles = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 20 } = req.query;
+
+    const query = { isPublished: true, manuscriptId: { $exists: false } };
+
+    const articles = await Article.find(query)
+      .populate('author', 'name email')
+      .populate('coAuthors', 'name email')
+      .populate('volume', 'volumeNumber year')
+      .populate('issue', 'issueNumber publishDate')
+      .sort({ publishDate: -1 })
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit));
+
+    const total = await Article.countDocuments(query);
+
+    res
+      .status(200)
+      .json({ success: true, count: articles.length, total, data: articles });
+  });
+
+  // ── Update a manually published article ───────────────────────────
+  updateManualArticle = asyncHandler(async (req, res) => {
+    const user = (req as AdminAuthenticatedRequest).user;
+    const { id } = req.params;
+    const {
+      title,
+      abstract,
+      keywords,
+      articleType,
+      pageStart,
+      pageEnd,
+      publishDate,
+    } = req.body;
+
+    const article = await Article.findById(id);
+    if (!article) throw new NotFoundError('Article not found');
+    if (article.manuscriptId)
+      throw new BadRequestError(
+        'Cannot edit articles from submission workflow here'
+      );
+
+    const API = process.env.API_URL || 'http://localhost:3000';
+
+    if (title) article.title = title;
+    if (abstract) article.abstract = abstract;
+    if (keywords !== undefined) {
+      article.keywords =
+        typeof keywords === 'string'
+          ? keywords
+              .split(',')
+              .map((k: string) => k.trim())
+              .filter(Boolean)
+          : keywords;
+    }
+    if (articleType) article.articleType = articleType;
+    if (pageStart && pageEnd) {
+      article.pages = { start: parseInt(pageStart), end: parseInt(pageEnd) };
+    }
+    if (publishDate) article.publishDate = new Date(publishDate);
+
+    if (req.file) {
+      if (article.pdfFile && article.pdfFile.trim()) {
+        const baseDir = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
+        const oldPath = path.join(
+          process.cwd(),
+          baseDir,
+          article.pdfFile.replace(API, '')
+        );
+        try {
+          if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        } catch (err) {
+          logger.error(`Error deleting old PDF: ${err}`);
+        }
+      }
+      article.pdfFile = `${API}/uploads/manual_articles/${req.file.filename}`;
+    }
+
+    await article.save();
+    logger.info(`Admin ${user.id} updated manual article ${id}`);
+    res.status(200).json({
+      success: true,
+      message: 'Article updated successfully',
+      data: article,
+    });
+  });
+
+  // ── Delete a manually published article ───────────────────────────
+  deleteManualArticle = asyncHandler(async (req, res) => {
+    const user = (req as AdminAuthenticatedRequest).user;
+    const { id } = req.params;
+
+    const article = await Article.findById(id);
+    if (!article) throw new NotFoundError('Article not found');
+    if (article.manuscriptId)
+      throw new BadRequestError(
+        'Cannot delete articles from the submission workflow'
+      );
+
+    const API = process.env.API_URL || 'http://localhost:3000';
+    if (article.pdfFile && article.pdfFile.trim()) {
+      const baseDir = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
+      const filePath = path.join(
+        process.cwd(),
+        baseDir,
+        article.pdfFile.replace(API, '')
+      );
+      try {
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      } catch (err) {
+        logger.error(`Error deleting PDF: ${err}`);
+      }
+    }
+
+    await Article.findByIdAndDelete(id);
+    logger.info(`Admin ${user.id} deleted manual article ${id}`);
+    res
+      .status(200)
+      .json({ success: true, message: 'Article deleted successfully' });
+  });
 }
 
 export default new PublicationController();
