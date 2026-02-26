@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // migrate_articles.js
 // Usage: mongosh "mongodb://localhost:27017/YOUR_DB_NAME" migrate_articles.js
 // Migrate ONE ISSUE AT A TIME — change the array below for each run.
@@ -7,15 +8,73 @@
 // ============================================================
 const ARTICLES_TO_MIGRATE = [
   {
-    title: 'Your Article Title Here',
-    abstract: 'Full abstract text...',
-    keywords: ['keyword1', 'keyword2'],
-    authorEmail: 'author@email.com',
-    coAuthorEmails: ['coauthor@email.com'],
-    volumeNumber: 1,
+    title:
+      "SECONDARY SCHOOL LEADERS' PERSONALITY AND STUDENTS' DISCIPLINARY BEHAVIOR",
+    abstract:
+      "This article is a theoretical study of school leaders' personality and students' disciplinary behaviour. The study is hinged on Edwin. (1971) trait theory. The challenges associated with students’ disciplinary behavior appear to be a great concern to all school stakeholders. The aim of this work is to improve on the production of quality students with good disciplinary behaviour in other to achieve school output, certified with excellent character besides good academic performance, to form an insurmountable labour force into the world of works for national development. This paper, therefore, focused on the concept of school leadership, the concept of personality, school leadership personality, students' disciplinary behaviour, impact of leaders' personality on students' disciplinary behaviour, challenges associated with students' discipline, conclusion and suggestions. The paper posits that school leaders' personality is perceived to have a positive influence on students disciplinary behaviour. Finally, the paper recommends moral punishment which is regarded as the corrective “whip” that acts as a negative reinforcer of desired values and cooperative behavior, and well spelt out code of conduct for all students to follow as measures to ensure discipline among students.",
+    keywords: [
+      'School',
+      'Leaders',
+      'Personality',
+      'Students',
+      'Disciplinary Behaviour',
+    ],
+    authorEmail: 'nelsonetacm@gmail.com',
+    coAuthorEmails: [],
+    volumeNumber: 8,
     issueNumber: 1,
-    articleType: 'research_article', // research_article | review_article | case_study | book_review | editorial | commentary
-    pages: { start: 1, end: 20 },
+    articleType: 'research_article',
+    pages: { start: 1, end: 9 },
+  },
+  {
+    title: 'THE INTERNAL STRUCTURE OF THE ẸDO FAMILY SALUTATION (ÙKHÙ)',
+    abstract:
+      "This study examines the internal structure of Ùkhù (the Ẹdo family morning salutation) terms. It seeks to decompose these class of honorific terms in the language and show their internal morphemic computations. The data for the study comprise sixty (60) ùkhù terms gotten from one hundred (100) Ẹdo speakers of different family and communal backgrounds. The terms were extracted and organized in the order of their internal lexical forms and analyzed based on Nida's principles for identifying morphemes. The study finds, among others, that the ukhu terms are generally composed of either dè-, lá- or both prefixes, added to a root which is usually selected in recognition of an iconic personality, a place, a deity or a position of authority which a person occupies. The paper concludes that ùkhù is a compressed version of honorific expressions that began as praise expressions but have become fossilized, over time.",
+    keywords: ['Ẹdo', 'Morpheme', 'Honorifics', 'Ukhu', 'Salutation'],
+    authorEmail: 'osaigbovo.evbuomwan@uniben.edu',
+    coAuthorEmails: ['ighasere.aigbedo@uniben.edu'],
+    volumeNumber: 8,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 10, end: 26 },
+  },
+  {
+    title:
+      'AN ASSESSMENT OF THE NEXUS BETWEEN LOCAL GOVERNMENT ADMINISTRATION AND COMMUNITY DEVELOPMENT IN UHUNMWODE LOCAL GOVERNMENT AREA, EDO STATE, NIGERIA',
+    abstract:
+      'This study examined the need for local government functionaries to step up their service delivery capacity efforts in order that the essence for which the local governments are created – bringing governance and development – to the door step of the people. Two communities were sampled from each of the ten wards in Uhunmwode Local Government Area (LGA). Inhabitants of the ten wards in the local government area including the local council officials constitute the population of this study. Survey research design was adopted for the study and the purposive sampling technique was applied in selecting research respondents. The research instruments used in collecting data were In-depth interview (IDI), Focus group discussion (FGD), Record evaluation and Project assessment. Data obtained were analyzed using qualitative research technique suc as manual thematic and content analysis. The result shows glaring absence/poor basic amenities in the locality which have put the situation of community members in a more precarious state. The challenges include poor political participation by the people, lack of opportunities which orchestrated poor socio-economic fortunes resulting in mass rural- urban drift among others. The study recommend that the local people should be involve in the process of project identification, execution and management in their various communities This study concludes that local government autonomy is being advocated, for legislations in order to support the prescribed degree of competences for the Local Government Area political heads/functionaries that would be in place for the desired impact to be derived.',
+    keywords: [
+      'Community development',
+      'Rural',
+      'Uhunmwode Local Government Area',
+      'Urban Drift',
+      'Youth',
+    ],
+    authorEmail: 'lucky.odia@aauekpoma.edu.ng',
+    coAuthorEmails: [],
+    volumeNumber: 8,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 27, end: 51 },
+  },
+  {
+    title:
+      'APPRAISAL OF THE USE OF SOCIAL MEDIA PLATFORMS FOR FORMATIVE ASSESSMENT AMONG UNIVERSITY LECTURERS IN EDO STATE, NIGERIA.',
+    abstract:
+      'This paper assessed the use of social media platforms for formative assessment among University lecturers in Benin Metropolis, Nigeria. Three research questions and one hypothesis guided this study. The study adopted Ex-Post Facto research design. The population of the study consisted of all the lecturers from Faculty of Education University of Benin and Department of Education, Benson Idahosa University giving a total of 167 lecturers from both Universities. A sample size of 56 lecturers was drawn using multi-stage sampling techniques. One research instrument was used to collect data for the study, Use of Social Media Platforms for Assessment Scale (USMPAS) with 16 items. Cronbach Alpha was used to determine a reliability coefficient of 0.848. Research questions were answered using basic statistics and hypothesis 1 was tested using independent sample t-test. The result of the study revealed that majority of the University lecturers in Benin Metropolis are only familiar with WhatsApp and E-mail. It was recommended that university lecturers should try as much as possible to expand their scope of social media platforms usage for assessment purpose.',
+    keywords: [
+      'Digitization',
+      'university lecturers',
+      'level of internet competency',
+      '21st Century',
+      'formative assessment',
+    ],
+    authorEmail: 'margaret.denedo@uniben.edu',
+    coAuthorEmails: ['MISSING_EMAIL_3'],
+    volumeNumber: 8,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 52, end: 67 },
   },
 ];
 // ============================================================
