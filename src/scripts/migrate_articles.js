@@ -70,7 +70,7 @@ const ARTICLES_TO_MIGRATE = [
       'formative assessment',
     ],
     authorEmail: 'margaret.denedo@uniben.edu',
-    coAuthorEmails: ['MISSING_EMAIL_3'],
+    coAuthorEmails: ['ijeoma.opara@uniport.edu.ng'],
     volumeNumber: 8,
     issueNumber: 1,
     articleType: 'research_article',
