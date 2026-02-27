@@ -9,72 +9,41 @@
 const ARTICLES_TO_MIGRATE = [
   {
     title:
-      'MATERNAL HEALTH AND SOCIO-ECONOMIC CONDITIONS OF WOMEN IN SSA. FURTHER EVIDENCE FROM VAR GRANGER CAUSALITY',
+      'PUBLIC PARTICIPATION AND SUSTAINABLE ENVIRONMENTAL RESOURCE MANAGEMENT IN NIGERIA: IMPLICATION FOR PUBLIC POLICY DEVELOPMENT',
     abstract:
-      'Since the Safe Motherhood Initiative (SMI) was implemented in Nairobi, Kenya, everyone has agreed that good health for all pregnant mothers is a global goal. This has prompted several international conventions and programmes aimed at developing strategies to improve the health of pregnant women and their newborn babies.  The study looks at the relationship between socioeconomic factors and maternal health in Sub-Saharan Africa from 1995 to 2019. The panel unit root test (LCC) results indicate that the properties of the variables for the SSA countries are stable at levels. The results of the VAR causality test and the Granger causality test proposed by Granger show the presence of causality from any of the variables in the model, as well as the absence of causality. One of the policy implications of the findings is the need for a rethinking of a well-coordinated and consistent policy based on an understanding of the behavior of maternal health-driven policy variables, including inclusive health programs and interventions. Workable investment policies in primary and secondary healthcare, tailored to socioeconomic variables, would be beneficial.',
+      'This paper holistically examined the lacuna created by lack of public participation in the efforts to attain sustainable environmental resource management in Nigeria. It adopted the content analysis of secondary data in journals, internet, government gazette and periodicals amongst others. The result of the analysis and review of the data established the fact that the bane of the failure and ineffectiveness of public actions and issues in the context of environmental management is the lacuna created and the gap between government and the people and the exclusion of public participation in the management of the environment resources in Nigeria. Feasible recommendations as penance to remedy this negative development were made at the end of the discourse.',
     keywords: [
-      'Maternal Health',
-      'Socioeconomic factors',
-      'SSA',
-      'VAR granger causality',
-      'Women in SSA',
+      'Environmental resource management',
+      'Public participation',
+      'Sustainable development',
+      'Pollution',
+      'Public policy thrusts',
     ],
-    authorEmail: 'presley.osemwengie@uniben.edu',
-    coAuthorEmails: ['oluchi.okocha@uniben.edu'],
-    volumeNumber: 9,
-    issueNumber: 2,
-    articleType: 'research_article',
-    pages: { start: 24, end: 41 },
-  },
-  {
-    title:
-      'CRITIQUE OF “STRESS, HEALTH AND ILLNESS: FOUR CHALLENGES FOR THE FUTURE” AND “A STUDY OF CAUSES OF STRESS AND STRESS MANAGEMENT AMONG YOUTH”',
-    abstract:
-      'The critique paper examined two articles on stress─ stress, health and illness: four challenges for the future, and a study of causes of stress and stress management among youth in four regions in India. The critique probe into their efficacies/strengths and identify inherent weaknesses/limitations. Through a comprehensive review of the studies, the analysis exposes disparities in the effectiveness of current/contemporary issues in stress studies. The paper scrutinizes both the languages and writing style, appropriateness of methodology, clarity of purpose, significance, literature review for gaps and comprehensiveness, accurate and consistent citation practices and ethical considerations.  One notable strength in the article: stress, health and illness… is the paper’s comprehensive approach to the title and its objective. The paper addresses critical issue in our contemporary world as well as meeting the four challenges for the future. The writing style is appropriate coupled with the clarity of purpose. The citations were consistent. However, the paper lacks a longitudinal component, limiting the ability to establish causal relationships. Similarly, the paper by Bhargava and Trivedi succeeded in addressing the causes of stress and management of stress among young people but not without some inherent weaknesses/limitations. However, by identifying gaps and suggesting some recommendations, the critique contributes to the ongoing discourse on advancing comprehensive stress practices for individual and organization.',
-    keywords: ['Critique', 'Stress', 'Health', 'Illness', 'Stress management'],
-    authorEmail: 'osama.adagbonyin@uniben.edu',
-    coAuthorEmails: ['presley.osemwengie@uniben.edu'],
-    volumeNumber: 9,
-    issueNumber: 2,
-    articleType: 'research_article',
-    pages: { start: 42, end: 51 },
-  },
-  {
-    title: 'EMMERGING ISSUES IN ASSESSMENT AND TESTING: QUALITY DELIMA',
-    abstract:
-      'Performance in schools is increasingly judged on the basis of effective learning outcomes. The effectiveness of assessment and testing relies to a great extent on ensuring that both those who design and undertake its activities as well as those who use their results possess the quality skills and competencies to address the crucial issues necessary for assessment and testing. This study investigated emerging issues in assessment and testing. It x-rays the theoretical framework, assessment and testing with the aim of discussing the emerging issues in assessment and testing. The paper also identified and discussed the various reformed in assessment and testing. The paper further advance recommendations that there should be the need for workshops seminars and training forums to enable personnel who are involved in teaching and learning to understand more emerging issues and preferred reforms to address those issues.',
-    keywords: [
-      'Assessment',
-      'Testing',
-      'Emerging issues',
-      'Reforms',
-      'Quality',
-    ],
-    authorEmail: 'patriciaegba@gmail.com',
-    coAuthorEmails: ['paulette.ekejiuba@uniben.edu'],
-    volumeNumber: 9,
-    issueNumber: 2,
-    articleType: 'research_article',
-    pages: { start: 52, end: 66 },
-  },
-  {
-    title:
-      'PERCEPTION OF THE IMPACT OF INFERTILITY ON MARITAL SATISFACTION BY RESIDENTS OF UGBOWO COMMUNITY, BENIN CITY, EDO STATE',
-    abstract:
-      'This study investigates the perception of infertility and marital satisfaction among married couples in Ugbowo community, Benin City, Edo state, Nigeria. The study adopted the dynamic goal theory as theoretical framework. It adopted mixed methods research designed for the data collection from married, divorced, widows and widowers’ residents in the study area. A total of 410 participants were selected using a multi stage sampling technique which comprised 400 participants who were administered the questionnaire and 10 other participants who were interviewed. The information obtained from the field were analyzed with the Statistical Package for Social Sciences (SPSS) (version 20) and the results were presented with descriptive statistics such as frequency tables and percentages. The in-depth interview was screened for consistency and thereafter transcribed and thematically analyzed the major themes with regards to the research objectives. The findings of the study established that infertility indeed influence marital satisfaction because many couples who are unable to procreate are hurt, sad, isolate themselves, and are in despair and these issues are mostly common among the women than the men and this has threatened several marriages in Ugbowo community, Edo State. The findings also show that infertility had a negative effect on the marital satisfaction among married couples in Ugbowo and the study recommends that there should be the need for good therapeutic counseling to couples facing the problems associated with infertility and childlessness.',
-    keywords: [
-      'Perception',
-      'Infertility',
-      'Married couples',
-      'Marital satisfaction',
-      'Ugbowo community',
-    ],
-    authorEmail: 'omorosec@gmail.com',
+    authorEmail: 'ernest.ugiagbe@uniben.edu',
     coAuthorEmails: [],
-    volumeNumber: 9,
-    issueNumber: 2,
+    volumeNumber: 10,
+    issueNumber: 1,
     articleType: 'research_article',
-    pages: { start: 85, end: 106 },
+    pages: { start: 1, end: 15 },
+  },
+  {
+    title:
+      'INNOVATION, LEADERSHIP STYLE AND ORGANISATIONAL PERFORMANCE IN THE OIL AND GAS SECTOR OF NIGERIA (A CASE STUDY OF NATIONAL PETROLEUM DEVELOPMENT COMPANY)',
+    abstract:
+      'The purpose of the study was to examine the relationship among innovation, leadership style and organizational performance of NPDC in Benin City. The study adopted survey research design. The findings from the study revealed that Innovation dimensions (such as marketing innovation, management innovation and human resource innovation) had significant relationship with the performance of NPDC in Benin City. The study also revealed that Human resource innovation had the highest positive influence on the performance of NPDC in Benin City. Although all the innovation dimensions were positively related with transactional and transformational leadership styles, none of the dimensions had a significant relationship with transactional leadership style. Human resource innovation and management innovation were the dimensions that had significant influence on both transformational leadership style and the performance of NPDC in Benin City. Transactional leadership style was not significant with organizational performance, whereas transformational leadership was significant with organizational performance. Transformational leadership style was found to partially mediate the relationship between innovation and performance of NPDC in Benin City. It was recommended that NPDC should pay adequate attention to human resource innovation through training and development programmes. Transformational leadership should be developed across the entire organisation.',
+    keywords: [
+      'Innovation',
+      'Transformational Leadership',
+      'Management',
+      'Organisational Performance',
+      'National Petroleum Development',
+    ],
+    authorEmail: 'oluchi.okocha@uniben.edu',
+    coAuthorEmails: ['presley.osemwengie@uniben.edu'],
+    volumeNumber: 10,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 56, end: 73 },
   },
 ];
 // ============================================================
