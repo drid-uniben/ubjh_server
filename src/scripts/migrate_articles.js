@@ -9,54 +9,77 @@
 const ARTICLES_TO_MIGRATE = [
   {
     title:
-      'DEMOGRAPHIC CHARACTERISTICS IN THE ATTITUDE OF POSTGRADUATE STUDENTS TOWARDS THE USE OF INFORMATION RESOURCES IN UNIVERSITY LIBRARIES IN SOUTH-SOUTH, NIGERIA',
+      'ECOLOGICAL SYSTEMS THEORY AND UNDERSTANDING OF THE PHENOMENA OF POVERTY AND SOCIAL LOAFING IN BENIN METROPOLIS, EDO STATE, NIGERIA',
     abstract:
-      'The study investigated the demographic characteristics in the attitude of postgraduate students towards the use of information resources in university libraries in south-south Nigeria. The specific purpose was to examine the differences in the attitude of male and female postgraduate students towards the use of information resources, explore the disciplinary differences in the attitude of postgraduate students towards the use of information resources, in university libraries located in Edo, Delta, Bayelsa, Akwa-Ibom, Cross River, and Rivers States. Four research questions and four hypotheses were raised to guide this study. The survey method was adopted. A sample of 1,744 was drawn out of the population of 17,449 from which 1,412 was found usable for the study. The reliability of the instrument used for the survey was tested using Cronbach Alpha which yielded an index of (0.87). The data were analyzed using frequency counts, percentage, mean, standard deviation, z-test and ANOVA. The results of analysis revealed that Sex difference and disparate academic discipline influence Postgraduate students’ attitude towards the use of information resources in university libraries in South-South Nigeria. It was recommended that the libraries should be well funded in order to acquire current and relevant information materials, organize symposium on available information resources as part of orientation programme for postgraduate students. Assignments that compel postgraduate students to use library information resources should be encouraged by the academia. Finally the Reference librarians should be accessible for information resources consultation.',
-    keywords: ['Sex', 'Academic Discipline', 'Attitude', 'Libraries', 'ANOVA'],
-    authorEmail: 'joyce.oragbon@uniben.edu',
-    coAuthorEmails: ['samuwaifo@yahoo.com'],
-    volumeNumber: 8,
-    issueNumber: 2,
+      'This paper espoused the nexus between ecosystems theory and the understanding of the social problems of poverty and social loafing in Benin Metropolis. The paper x-rays the connections between societal processes, class structure and distribution of the resources of the land and contended that social loafing and poverty are caused by the unhealthy and inequitable power-authority relations between different groups in the highly hierarchical Benin Metropolis. This paper shows that endemic poverty and social loafing is common in some parts of Benin Metropolis because of the structural economic divides and the stereotypical allocation of resources including development programmes between the highbrow Government Residential Area (GRA), the City Central Business District (CBD) and the surburbs have resulted in myriads of social pillars including poverty and social loafing. A social worker must first identify that his/her client’s issue is a social systems issue and then intervene using the lens of an ecosystems theory and understand the issue and the interplay of the environment in the exacerbation of the issue and this will help a social worker know the subsystem to address and the extent of the intervention. The paper advances some feasible panacea as the way forward. The paper recommends that the ecosystem theory be employed more in the Nigerian social work practice to further strengthen the practice of social workers especially those in the government institutions.',
+    keywords: [
+      'Social Loafing',
+      'Ecosystem',
+      'Environment',
+      'Metropolis',
+      'Poverty',
+    ],
+    authorEmail: 'aladeseluosayuwamen@gmail.com',
+    coAuthorEmails: [],
+    volumeNumber: 9,
+    issueNumber: 1,
     articleType: 'research_article',
-    pages: { start: 51, end: 70 },
+    pages: { start: 49, end: 62 },
   },
   {
     title:
-      'THE IMPACT OF N-POWER PROGRAMME ON FOOD POVERTY REDUCTION OF BENEFICIARIES IN OREDO LOCAL GOVERNMENT AREA, EDO STATE, NIGERIA',
+      'FINANCIAL DEVELOPMENT AND INDUSTRIAL OUTPUT IN NIGERIA: EXPLORING THE LONG RUN AND SHORT RUN DYNAMIC NEXUS',
     abstract:
-      'The plan by former president Muhammadu Buhari to lift 100 million Nigerians out of endemic poverty by the year 2030 using appropriate social protection programmes and to know the extent to which this has been achieved through N-Power programmes necessitated the study. The objective of the study was to determine how N-Power worked to reduce the food poverty of beneficiaries in Oredo L.G.A of Edo State. The study leverages empowerment theory and the population of the study comprises N-Power batch A and B enrollees who served in Oredo L.G.A. of Edo State.. The researchers reviewed relevant literature in the area of the study and to have a robust knowledge of the subject matter of discourse the study utilised mixed methods of data collection which involved the use of both quantitative and qualitative methods. Taro Yamani scientific tools were used to obtain an optimum sample size of 345 for N-Power batches A and B respectively. The hypothesis raised was tested with the Pearson correlation statistical method. Findings revealed that N-Power programme has improved the general standard of living of beneficiaries, and closed the food poverty inequality gap between beneficiaries against non-beneficiaries of the programme in the aforementioned local government area. The study recommends that Government should enshrine social protection programmes into the Nigerian constitution, Government at all levels should evolve different food intervention programmes such as food stamps, and food vouchers among others to address the biting challenges of food poverty in Nigeria.',
+      'Contrasting empirical findings abound in literature on the nexus between financial development and industrial growth. It is against this backdrop and that of the declining industrial growth and financial development in Nigeria that this study examines a new evidence of the short-run dynamic, and long- run relationship between financial development and industrial growth in Nigeria. The study employs Error Correction Model (ECM) and Fully Modified OLS (FMOLS) regression techniques for a period spanning 1990 to 2021. A significant positive relationship was found in the long run and short run dynamics between financial development and industrial growth in Nigeria. The study recommends the removal of obvious impediments to financial development in Nigeria such as; multiple tax regimes, over regulation of the financial system, multiple charges on banking transactions, insider abuses in the financial system, socio-political tensions and monetary policy conflicts so as to reap the gains of financial development on industrial growth.',
     keywords: [
-      'Beneficiaries',
-      'Food Poverty',
-      'N-Power Programme',
-      'Oredo L.G.A',
-      'Reduction',
+      'Industrial Growth',
+      'Financial Development',
+      'Fully Modified OLS',
+      'Nigeria',
+      'Dynamic Nexus',
     ],
-    authorEmail: 'isiakamustapha1961@gmail.com',
-    coAuthorEmails: ['fred.okunmahie@edouniversity.edu.ng'],
-    volumeNumber: 8,
-    issueNumber: 2,
-    articleType: 'research_article',
-    pages: { start: 83, end: 95 },
-  },
-  {
-    title:
-      'STRUCTURAL CHANGES AND TAX PERFORMANCE IN ECOWAS SUB-REGION: THEORETICAL AND DESCRIPTIVE PERSPECTIVE',
-    abstract:
-      'The pattern of changes and adjustments in the structure of an economy is an issue of consideration in determining tax performance. Most countries inclusive of countries within ECOWAS sub region have recorded major structural changes over the years and this no doubt has a bearing on tax performance in particular and the economy in general.  Structural changes was considered as changes in sectorial shares as it relates to output, productivity growth while tax performance was considered in terms of the ratio of taxes to GDP and the structure of taxation in a panel of fifteen (15) countries of the ECOWAS sub-region covering the period of 2000 to 2017. To this end, varied theories were reviewed while the data set were processed and descriptively presented as it relates to structural changes and tax performance in ECOWAS. It was observed that structural changes did not remarkably reflect in improved tax performance owing to factors such as weak tax laws, ease of paying taxes, high of tax rates. It was then recommended amongst others that there is need for ECOWAS sub region to ensure structural adjustments that are market-based and effectively guided by policies and institutional enforcements.',
-    keywords: [
-      'Structural Changes',
-      'Tax Performance',
-      'ECOWAS',
-      'Time Series',
-      'Descriptive Perspective',
-    ],
-    authorEmail: 'roland_irughe@yahoo.com',
+    authorEmail: 'osamedeabusomwan@gmail.com',
     coAuthorEmails: ['norense.izevbigie@uniben.edu'],
-    volumeNumber: 8,
-    issueNumber: 2,
+    volumeNumber: 9,
+    issueNumber: 1,
     articleType: 'research_article',
-    pages: { start: 119, end: 136 },
+    pages: { start: 63, end: 78 },
+  },
+  {
+    title: 'AN ESAN PERSPECTIVE OF ENVIRONMENTAL ETHICS',
+    abstract:
+      "This study is an exposition of environmental ethics based on Esan ontology. It begins with a brief excursion into Esan ontology to enable an understanding of the Esan perception of reality and the place of man in the totality of this reality. It explicates how this ontology impinges on the environment and concretely affects the Esan people's relationship with their environment. It argues that the interplay between ontology and the natural environment in Esan worldview constitutes the basis upon which viable environmental ethics can be established. The study argues that in Esan ontology, man is not separated from the rest of reality. Rather, it acknowledges that there is unity among beings and that the different components of nature complement one another to make a being the being that it is. Hence, Esan considers the non-human parts of the environment as part and parcel of her moral community. Consequently, the study argues that both present and future generations of people, the natural environment, including animals, plants and non-living natural beings have intrinsic value, and in consequence, moral standing. The study thus argues for inclusive environmental ethics based on the metaphysical union of beings in Esan thought. In résumé, the study projects the idea of ‘complementary environmentalism’ as a viable approach for human moral relation with nature. It adopts the critical, conceptual and speculative methods of philosophical inquiries.",
+    keywords: [
+      'Esan ontology',
+      'Natural environment',
+      'Union of beings',
+      'Environmental ethics, Future generation',
+      'Complementary environmentalism',
+    ],
+    authorEmail: 'felix.airoboman@uniben.edu',
+    coAuthorEmails: [],
+    volumeNumber: 9,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 79, end: 103 },
+  },
+  {
+    title:
+      'CREDIT RISK MANAGEMENT AND DEPOSIT MONEY BANK’S PERFORMANCE IN NIGERIA',
+    abstract:
+      'This paper investigated the impact of credit risk management on the performance of deposit money banks in Nigeria, as the main objective alongside the specific objectives of the paper. The paper used the causal research design, the Correlation and the panel least Square regression techniques as the methodology employed in the paper. Thus, data for the study were sourced from the CBN Statistical Bulletin between the 2006 to2018 periods. Our findings demonstrate succinctly that the selected credit risk management indicators under study significantly impact on the performance of deposit money banks measured as return on equity, return on assets, respectively.  Our findings however suggest that ROA is a better measure of performance than ROE. And our  recommendation are that, Banks should not always be in a rush in approving loans for prospective borrowers but should first determine the credit worthiness of the customer so as to aid quick pay back of the loan. This will not only reduce the massive loan losses often witnessed by them, it will also reduce their huge provision for loss loans and thereby improving their performance over time.',
+    keywords: [
+      'Panel Least Square',
+      'Credit Risk',
+      'Performance Deposit',
+      'Credit Risk Management',
+    ],
+    authorEmail: 'bright.oni@uniben.edu',
+    coAuthorEmails: ['eseoghene.idolor@uniben.edu'],
+    volumeNumber: 9,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 104, end: 126 },
   },
 ];
 // ============================================================
