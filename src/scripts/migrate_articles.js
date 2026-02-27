@@ -9,41 +9,73 @@
 const ARTICLES_TO_MIGRATE = [
   {
     title:
-      'PUBLIC PARTICIPATION AND SUSTAINABLE ENVIRONMENTAL RESOURCE MANAGEMENT IN NIGERIA: IMPLICATION FOR PUBLIC POLICY DEVELOPMENT',
+      'A CRITICAL APPRAISAL OF THEORETICAL PERSPECTIVES ON AFRICA’S DEVELOPMENT: A REVISIT OF MODERNIZATION AND DEPENDENCY THEORIES',
     abstract:
-      'This paper holistically examined the lacuna created by lack of public participation in the efforts to attain sustainable environmental resource management in Nigeria. It adopted the content analysis of secondary data in journals, internet, government gazette and periodicals amongst others. The result of the analysis and review of the data established the fact that the bane of the failure and ineffectiveness of public actions and issues in the context of environmental management is the lacuna created and the gap between government and the people and the exclusion of public participation in the management of the environment resources in Nigeria. Feasible recommendations as penance to remedy this negative development were made at the end of the discourse.',
+      'The paper examines the scholarly debate and prescriptions of the modernization/dependency theoretical constructs in justifying the underdevelopment status of African states. It critically discussed the views of scholars of both divide in an attempt to seek for plausible solutions to the African dilemma. The descriptive analytical construct was adopted in analyzing the phenomenon chronologically and systematically to ensure thorough appraisal and understanding. The paper argue that the economic development problems facing Africa cannot be resolved with the prescription of either of the development theories, hence, the need for integration and harmonization of both perspectives and adoption of an approach that is neither Liberal nor Marxist but capable of resolving the African development challenges. In this vein, the paper advocates the adoption of the strong points and benefits prescribed by both construct to be implemented in such a way as to avoid the breaching of international trade agreements and exchange.',
     keywords: [
-      'Environmental resource management',
-      'Public participation',
-      'Sustainable development',
-      'Pollution',
-      'Public policy thrusts',
+      'Modernization',
+      'dependency',
+      'Underdevelopment',
+      'African economies',
+      'global south',
     ],
-    authorEmail: 'ernest.ugiagbe@uniben.edu',
-    coAuthorEmails: [],
-    volumeNumber: 10,
+    authorEmail: 'osariyekemwen.igiebor@uniben.edu',
+    coAuthorEmails: ['joseph.aihie@uniben.edu', 'daniel.tonwe@uniben.edu'],
+    volumeNumber: 11,
     issueNumber: 1,
     articleType: 'research_article',
-    pages: { start: 1, end: 15 },
+    pages: { start: 1, end: 14 },
   },
   {
     title:
-      'INNOVATION, LEADERSHIP STYLE AND ORGANISATIONAL PERFORMANCE IN THE OIL AND GAS SECTOR OF NIGERIA (A CASE STUDY OF NATIONAL PETROLEUM DEVELOPMENT COMPANY)',
+      'CURRENCY REDESIGN POLICY: ASSESSING THE IMPACT ON COUNTERFEIT PREVENTION IN NIGERIA BEYOND 2023',
     abstract:
-      'The purpose of the study was to examine the relationship among innovation, leadership style and organizational performance of NPDC in Benin City. The study adopted survey research design. The findings from the study revealed that Innovation dimensions (such as marketing innovation, management innovation and human resource innovation) had significant relationship with the performance of NPDC in Benin City. The study also revealed that Human resource innovation had the highest positive influence on the performance of NPDC in Benin City. Although all the innovation dimensions were positively related with transactional and transformational leadership styles, none of the dimensions had a significant relationship with transactional leadership style. Human resource innovation and management innovation were the dimensions that had significant influence on both transformational leadership style and the performance of NPDC in Benin City. Transactional leadership style was not significant with organizational performance, whereas transformational leadership was significant with organizational performance. Transformational leadership style was found to partially mediate the relationship between innovation and performance of NPDC in Benin City. It was recommended that NPDC should pay adequate attention to human resource innovation through training and development programmes. Transformational leadership should be developed across the entire organisation.',
-    keywords: [
-      'Innovation',
-      'Transformational Leadership',
-      'Management',
-      'Organisational Performance',
-      'National Petroleum Development',
-    ],
-    authorEmail: 'oluchi.okocha@uniben.edu',
-    coAuthorEmails: ['presley.osemwengie@uniben.edu'],
-    volumeNumber: 10,
+      'The spread of fake bank notes has become a clog in the wheel of government revenue generation in Nigeria and across countries of the world. The menace has been so prevalent in Nigeria to the extent the country ranks among the top producers and users of counterfeit bank notes in West Africa. Between 2016 and 2020, the financial authorities seized 365.25 million fake banknotes in circulation. In 2020 alone, a total of 67,265 banknotes with a nominal value of N56.8 million were confiscated. The CBN has utilised numerous strategies to mitigate the problem over the years but with relatively low success rate. It is against this backdrop that this paper discusses the 2023 currency redesign and its implications for counterfeit prevention in Nigeria. Relying on secondary data and rational choice theoretical framework, the paper outlined the security features that are inherent in the newly redesigned currency notes of ₦200, ₦500 and ₦1000 which have been embedded to make counterfeiting difficult for violators. These features are: Intaglio Raised Print, Portrait Watermark, optically variable ink, Iridescent Band, Windowed Metallic Security Thread, Hand-engraved portrait, silver patch (antiscan), and Gold patch (antiscan). With this notion, the paper concludes that the quest for durable and long-lasting currency has just been achieved, not only in 2023 but beyond. This can be achieved when these recommendations are adhered to: Strict adherence to legal provisions, ensuring adequate production and effective distribution of the currency, Improved Public Awareness Campaign.',
+    keywords: ['Currency', 'Redesign', 'Counterfeit', 'Rational', 'Prevention'],
+    authorEmail: 'endurance.aigbe@uniben.edu',
+    coAuthorEmails: ['amaka.omamor@uniben.edu'],
+    volumeNumber: 11,
     issueNumber: 1,
     articleType: 'research_article',
-    pages: { start: 56, end: 73 },
+    pages: { start: 15, end: 30 },
+  },
+  {
+    title:
+      'KNOWLEDGE AND PERCEPTION OF THE CAUSATION AND TRANSMISSION OF ELEPHANTIASIS (LYMPHATIC FILARIASIS) IN OWAN- WEST LOCAL GOVERNMENT AREA, EDO STATE, NIGERIA',
+    abstract:
+      'Elephantiasis is also known as lymphatic filariasis, spread by mosquitoes. It derived it’s the name elephantiasis because of the swelling and the size of the affected part especially the legs. Elephantiasis also affects other parts of the body like the private parts, breast, hands etc. The causation of the disease Elephantiasis is a pathogenic nematode which is introduced to the human body through the bite of the mosquito, which thereafter causes the inflammation of the lymph nodes, fever, and lymphedema.   Elephantiasis is an infection in humans caused by the transmission of certain parasites called filariae (filariae worm) to humans through the bite of an infected mosquito. The mosquito transmits larvae into the human body that will later develop to adult worms called ‘Wuchereria Bancrofti’. Elephantiasis is a disease that seems to have so much misconception concerning its aetiology. Some persons believe that there is a spiritual and mystical undertone regarding the disease causation, others believe that it is hereditary, the act of gods or some deities. The study revealed that there are various misconceptions concerning the disease elephantiasis, for those that had various misconception and misperception about the disease, the proper medical treatment was and will not be sought after. The government should therefore intensify its effort to ensure proper and enlightenment campaign is launched in the endemic areas.',
+    keywords: [
+      'Causation',
+      'Disease',
+      'Knowledge',
+      'Lymphatic filariasis',
+      'Perception',
+    ],
+    authorEmail: 'ekwaegbeari.idehen-agho@uniben.edu',
+    coAuthorEmails: ['ibhafidon.sadoh@uniben.edu'],
+    volumeNumber: 11,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 31, end: 46 },
+  },
+  {
+    title:
+      'EXORBITANT ELECTION NOMINATION FORMS AND NOT-TOO-YOUNG-TO-RUN ACT IN NIGERIA: LESON FROM FRANCE',
+    abstract:
+      'Following the campaign by some activists to lower the minimum age at which candidates are eligible to run for political offices in Nigeria, the Nigerian Senate and House of Representatives passed a constitutional amendment bill that reduces the age of qualification for running for president. This is justifiable when compare to France where even as low as 18 years old can contest for the post of a president. The Not-Too-Young-To-Run Bill was` aimed at increasing youth participation in politics. However, the major political parties on ground are controlled by the bigwigs in the political space who determine who get what, when and how. Consequent upon their activities and deliberate imposition of an outrageous fee for expression of interest and nomination form, Nigeria is heading for moneybags politics and whoever gets more money wins the elections. The will of the people are not allowed to prevail in such circumstances, hence the aim of this paper is to identify the dialectical relationships between the pretentious encouragement of the youth in Nigeria to participate in elective positions and the imposition of an exorbitant nomination fees, with a view to determine whether or not the fees will draw more youth into elective positions in the country. The study uses descriptive research design and secondary data were obtained from textbooks, journals, newspapers, radio/television news and internet.  It was however revealed that not-too-young-to-run Act will remain a fallacy. It is a clear case of the political ruling classes giving with the right hands and collecting it back with the left hands, thereby doing everything possible to limit the young people from occupying political positions and participating in Nigeria democracy. Some suggestions were made to savage the situation. Among which was calling for a drastic reduction in the amount of money that political parties are charging for their express of interest and nomination forms.',
+    keywords: [
+      'Not-too-young-to-run-Act',
+      'Exorbitant election nomination forms',
+      'Youth participation',
+      'Moneybag Politics',
+      'Nigeria Democracy',
+    ],
+    authorEmail: 'moses.izevbizua@uniben.edu',
+    coAuthorEmails: ['kingsley.omoruyi@uniben.edu'],
+    volumeNumber: 11,
+    issueNumber: 1,
+    articleType: 'research_article',
+    pages: { start: 47, end: 60 },
   },
 ];
 // ============================================================
